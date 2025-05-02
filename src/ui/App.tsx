@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Dashboard from './Dashboard';
-import Homepage from './homepage';
-import ServerManagement from './serverManagement';
-import AgentManagement from './agentManagement';
-import EndpointSecurity from './endpointSecurity';
-import NetworkSecurity from './networkSecurity';
-import ThreatIntelligence from './threatIntelligence';
+import Dashboard from './pages/Dashboard';
+import Homepage from './pages/homepage';
+import ServerManagement from './pages/serverManagement';
+import AgentManagement from './pages/agentManagement';
+import EndpointSecurity from './pages/endpointSecurity';
+import NetworkSecurity from './pages/networkSecurity';
+import ThreatIntelligence from './pages/threatIntelligence';
 
 function App() {
   return (

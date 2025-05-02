@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { StatCard } from './StatCard';
-import './App.css';
+import { StatCard } from '../components/StatCard';
+import '../App.css';
 
 const gridIcon = `<svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M20 6H6V20H20V6Z" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -183,7 +183,7 @@ const Dashboard = () => {
         <div className="flex flex-col flex-1" style={{ marginLeft: 'var(--sidebar-width)' }}>
           <header className="top-bar">
             <div className="top-bar-left">
-              <div className="home-section">Agent Management</div>
+              <div className="home-section">Test Page</div>
             </div>
             <div className="top-bar-right">
               <button className="icon-button">⚙️</button>

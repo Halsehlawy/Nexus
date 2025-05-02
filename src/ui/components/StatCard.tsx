@@ -1,5 +1,5 @@
 import React from "react";
-import { IconSVG } from "./IconSVG";
+import { IconSVG } from "../assets/IconSVG";
 
 interface StatCardProps {
   icon: string;
