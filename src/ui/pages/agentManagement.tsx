@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom"
 import Layout from "../components/Layout"
 import StatCard from "../components/StatCard"
@@ -33,7 +32,7 @@ const AgentManagement = () => {
           icon={<Crosshair size={24} />}
           count={23}
           label="Incidents"
-          onClick={() => alert("Incidents clicked")}
+          onClick={() => navigate("/dashboard")}
         />
       </StatGrid>
     </Layout>

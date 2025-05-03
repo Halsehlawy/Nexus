@@ -1,9 +1,10 @@
 {
-  "name": "prototype",
+  "name": "nexus",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "main": "dist-electron/main.js",
+  "author":"Team Nexus",
   "scripts": {
     "dev": "npm-run-all --parallel dev:react dev:electron",
     "dev:react": "vite",
@@ -14,13 +15,15 @@
     "transpile:electron": "tsc -project src/electron/tsconfig.json",
     "dist:mac": "npm run transpile:electron && npm run build && electron-builder --mac --arm64",
     "dist:win": "npm run transpile:electron && npm run build && electron-builder --win --x64",
-    "dist:linux": "npm run transpile:electron && npm run build && electron-builder --linux --x64"
+    "dist:linux": "npm run transpile:electron && npm run build && electron-builder --linux --x64",
+    "clean": "rimraf dist dist-electron"
   },
   "dependencies": {
+    "date-fns": "^3.6.0",
+    "lucide-react": "^0.507.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.5.3",
-    "date-fns": "^3.6.0"
+    "react-router-dom": "^7.5.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
@@ -39,5 +42,14 @@
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0"
-  }
+    
+
+  },
+  "build": {
+  "files": [
+    "dist-react/**/*",
+    "dist-electron/**/*",
+    "node_modules/**/*"
+  ]
+}
 }

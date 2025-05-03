@@ -5,16 +5,17 @@
     position: fixed;
     left: 0;
     top: 0;
-    border-right: 1px solid var(--border-subtle);
     display: flex;
     flex-direction: column;
     z-index: 100;
   }
   
   .sidebar-logo {
+    height: 45px;
     padding: var(--spacing-lg);
-    border-bottom: 1px solid var(--border-subtle);
-    margin-bottom: var(--spacing-md);
+    padding-right:500px ;
+    border-bottom: 1px solid gray;
+    margin-bottom: var(--spacing-md); 
   }
   
   .logo-text {

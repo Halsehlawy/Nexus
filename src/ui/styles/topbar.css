@@ -1,7 +1,7 @@
 .topbar {
-    height: 105px;
+    height: 93px;
     background-color: var(--background-main);
-    border-bottom: 1px solid var(--border-subtle);
+    border-bottom: 1px solid gray;
     display: flex;
     align-items: center;
     justify-content: space-between;

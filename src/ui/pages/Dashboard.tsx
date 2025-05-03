@@ -27,7 +27,7 @@ const Dashboard = () => {
           icon={<Crosshair size={24} />}
           count={23}
           label="Incidents"
-          onClick={() => alert("Incidents clicked")}
+          onClick={() => navigate("/dashboard")}
         />
       </StatGrid>
 
