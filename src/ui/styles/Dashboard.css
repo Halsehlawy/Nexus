@@ -1,0 +1,22 @@
+.dashboard-graphs {
+    margin-top: var(--spacing-xl);
+  }
+  
+  .graph-row {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .dashboard-graph {
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-card);
+    max-width: 48%;
+    height: auto;
+  }
+  
+  .dashboard-graph.full-width {
+    width: 100%;
+    max-width: 100%;
+  }
+  

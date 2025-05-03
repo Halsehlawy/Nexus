@@ -1,20 +1,23 @@
-import React from "react";
-import { IconSVG } from "../assets/IconSVG";
+"use client"
+
+import type { ReactNode } from "react"
+import "../styles/statcard.css"
 
 interface StatCardProps {
-  icon: string;
-  count: string | number;
-  label: string;
+  icon: ReactNode
+  count: string | number
+  label: string
+  onClick?: () => void
 }
 
-export const StatCard: React.FC<StatCardProps> = ({ icon, count, label }) => {
+const StatCard = ({ icon, count, label, onClick }: StatCardProps) => {
   return (
-    <div className="bg-[#2A2A2A] p-6 flex flex-col items-center justify-center">
-      <IconSVG svg={icon} className="mb-4" />
-      <div className="text-center">
-        <div className="text-2xl font-bold mb-1">{count}</div>
-        <div className="text-sm text-gray-400">{label}</div>
-      </div>
+    <div className="stat-card" onClick={onClick}>
+      <div className="stat-icon">{icon}</div>
+      <div className="stat-count">{count}</div>
+      <div className="stat-label">{label}</div>
     </div>
-  );
-};
+  )
+}
+
+export default StatCard
