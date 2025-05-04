@@ -44,12 +44,5 @@
     "vite": "^6.2.0"
     
 
-  },
-  "build": {
-  "files": [
-    "dist-react/**/*",
-    "dist-electron/**/*",
-    "node_modules/**/*"
-  ]
-}
+  }
 }

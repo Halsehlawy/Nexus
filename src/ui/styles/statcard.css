@@ -1,6 +1,6 @@
 .stat-card {
     width: 160px;
-    height: 140px;
+    height: 100px;
     background-color: var(--background-card);
     border: 1px solid var(--border-card);
     border-radius: var(--border-radius-md);
@@ -19,7 +19,7 @@
   }
   
   .stat-icon {
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 5px;
     color: var(--text-primary);
     font-size: 24px;
   }
