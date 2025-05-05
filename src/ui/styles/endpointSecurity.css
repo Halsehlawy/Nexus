@@ -1,0 +1,157 @@
+/* === General Containers === */
+.process-container-wide,
+.malware-scan-container {
+  width: 850px;
+  margin: 40px auto;
+  background-color: #1e1e1e;
+  padding: 20px;
+  border: 1px solid #444444;
+  border-radius: 8px;
+  color: #ffffff;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* === Header (Title + Search) === */
+.table-header,
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.process-title,
+.section-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+  color: #ffffff;
+}
+
+/* === Back Button === */
+.back-button-container {
+  width: 850px;
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.back-button {
+  background: none;
+  color: #cccccc;
+  border: 1px solid #444444;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.back-button:hover {
+  background-color: #2d2d2d;
+}
+
+/* === Input Fields & Buttons === */
+.input {
+  padding: 8px 12px;
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #444444;
+  border-radius: 4px;
+}
+
+.button {
+  padding: 8px 16px;
+  background-color: #2d2d2d;
+  color: #ffffff;
+  border: 1px solid #444444;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.button:hover {
+  background-color: #383838;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === Row Alignment === */
+.row-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* === Table === */
+.process-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+.process-table th,
+.process-table td {
+  padding: 12px 16px;
+  border: 1px solid #444444;
+  text-align: left;
+}
+
+.process-table th {
+  background-color: #2a2a2a;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  user-select: none;
+}
+
+.process-table tr:hover {
+  background-color: #2d2d2d;
+}
+
+
+/* === Flags & Loading === */
+.suspicious-flag {
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+.loading-text {
+  text-align: center;
+  color: #cccccc;
+  font-style: italic;
+}
+
+
+/* === Scan Action Row (Scan left, Upload right) === */
+.scan-action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Result box styling is already in the file */
+.result-box {
+  padding: 12px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.result-safe {
+  color: #44ff44;
+  border: 1px solid #44ff44;
+}
+
+.result-danger {
+  color: #ff4d4f;
+  border: 1px solid #ff4d4f;
+}
