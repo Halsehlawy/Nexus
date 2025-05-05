@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom"
 import Layout from "../components/Layout"
 import StatCard from "../components/StatCard"
 import StatGrid from "../components/StatGrid"
-import { Grid, Users, AlertTriangle, Crosshair } from "lucide-react"
+import { Shield, Search, Calendar, Activity } from "lucide-react"
 
 const EndpointSecurity = () => {
   const navigate = useNavigate()
@@ -10,23 +10,23 @@ const EndpointSecurity = () => {
   return (
     <Layout title="Endpoint Security">
       <StatGrid>
-        <StatCard icon={<Grid size={30} />} count={690} label="Events" onClick={() => alert("Events clicked")} />
+        <StatCard 
+        icon={<Shield size={30} />} 
+        label="Malware Scan" 
+        onClick={() => alert("Events clicked")} />
         <StatCard
-          icon={<Users size={30} />}
-          count={120}
-          label="Active Agents"
+          icon={<Search size={30} />}
+          label="Port Scan"
           onClick={() => alert("Active Agents clicked")}
         />
         <StatCard
-          icon={<AlertTriangle size={30} />}
-          count={95}
-          label="Alerts"
+          icon={<Calendar size={30} />}
+          label="Active Processes"
           onClick={() => alert("Alerts clicked")}
         />
         <StatCard
-          icon={<Crosshair size={30} />}
-          count={23}
-          label="Incidents"
+          icon={<Activity size={30} />}
+          label="Performance "
           onClick={() => navigate("/dashboard")}
         />
       </StatGrid>

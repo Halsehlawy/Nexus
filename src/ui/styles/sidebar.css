@@ -14,7 +14,7 @@
     height: 45px;
     padding: var(--spacing-lg);
     padding-right:500px ;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid #444444;
     margin-bottom: var(--spacing-md); 
   }
   

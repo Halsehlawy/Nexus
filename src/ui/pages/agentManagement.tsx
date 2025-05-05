@@ -11,10 +11,11 @@ const AgentManagement = () => {
   return (
     <Layout title="Agent Management">
       <StatGrid>
-        <StatCard icon={<Grid size={30} />}
-         count={690}
+        <StatCard 
+          icon={<Grid size={30} />}
+          count={690}
           label="Events"
-           onClick={() => alert("Events clicked")} 
+          onClick={() => alert("Events clicked")} 
         />
         <StatCard
           icon={<Users size={30} />}

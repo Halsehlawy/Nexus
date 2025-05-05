@@ -5,7 +5,7 @@ import "../styles/statcard.css"
 
 interface StatCardProps {
   icon: ReactNode
-  count: string | number
+  count?: string | number
   label: string
   onClick?: () => void
 }
