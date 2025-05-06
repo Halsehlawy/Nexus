@@ -41,3 +41,12 @@ def get_active_processes():
         t.join()
 
     return processes
+
+def kill_process(pid: int) -> dict:
+    try:
+        p = psutil.Process(pid)
+        p.terminate()
+        p.wait(timeout=3)
+        return {"status": "success", "message": f"Process {pid} terminated."}
+    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.TimeoutExpired) as e:
+        return {"status": "error", "message": str(e)}

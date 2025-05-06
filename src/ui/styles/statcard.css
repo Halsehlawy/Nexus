@@ -1,6 +1,6 @@
 .stat-card {
     width: 160px;
-    height: 100px;
+    height: 80px;
     background-color: var(--background-card);
     border: 1px solid var(--border-card);
     border-radius: var(--border-radius-md);

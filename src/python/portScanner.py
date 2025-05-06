@@ -1,46 +1,45 @@
+import psutil
 import socket
-import threading
-from queue import Queue
 
-# Configuration
-target = "127.0.0.1"
-start_port = 1
-end_port = 1024
-thread_count = 100
+def get_open_ports():
+    open_ports = []
+    connections = psutil.net_connections(kind='inet')
 
-# Thread-safe queue
-port_queue = Queue()
-open_ports = []
+    for conn in connections:
+        if conn.status == psutil.CONN_LISTEN and conn.laddr:
+            port = conn.laddr.port
+            proto = 'TCP' if conn.type == socket.SOCK_STREAM else 'UDP'
+            pid = conn.pid
+            process_name = "Unknown"
+            service = None
 
-def scan_port():
-    while not port_queue.empty():
-        port = port_queue.get()
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(0.3)
-            result = s.connect_ex((target, port))
-            if result == 0:
+            if pid:
                 try:
-                    service = socket.getservbyport(port)
-                except:
-                    service = "Unknown"
-                print(f"[OPEN] Port {port} ({service})")
-                open_ports.append((port, service))
-        port_queue.task_done()
+                    process = psutil.Process(pid)
+                    process_name = process.name()
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    process_name = "Access Denied"
 
-# Fill the queue
-for port in range(start_port, end_port + 1):
-    port_queue.put(port)
+            try:
+                service = socket.getservbyport(port)
+            except:
+                service = "Unknown"
 
-# Start threads
-threads = []
-for _ in range(thread_count):
-    t = threading.Thread(target=scan_port)
-    t.start()
-    threads.append(t)
+            open_ports.append({
+                "port": port,
+                "protocol": proto,
+                "service": service,
+                "pid": pid,
+                "process_name": process_name
+            })
 
-# Wait for all threads to finish
-for t in threads:
-    t.join()
+    return open_ports
 
-# Summary
-print(f"\nScan complete. Open ports: {len(open_ports)}")
+def close_port_by_pid(pid: int):
+    try:
+        p = psutil.Process(pid)
+        p.terminate()
+        p.wait(timeout=3)
+        return {"status": "success", "message": f"Process {pid} terminated to close port."}
+    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.TimeoutExpired) as e:
+        return {"status": "error", "message": str(e)}

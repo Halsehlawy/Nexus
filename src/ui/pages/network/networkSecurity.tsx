@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom"
-import Layout from "../components/Layout"
-import StatCard from "../components/StatCard"
-import StatGrid from "../components/StatGrid"
-import { Grid, Users, AlertTriangle, Crosshair } from "lucide-react"
+import Layout from "../../components/Layout"
+import StatCard from "../../components/StatCard"
+import StatGrid from "../../components/StatGrid"
+import { BrickWallFire, Search, AlertTriangle, Crosshair } from "lucide-react"
+import "../../styles/NetworkSecurity.css"
+ 
 
 const NetworkSecurity = () => {
   const navigate = useNavigate()
@@ -10,13 +12,8 @@ const NetworkSecurity = () => {
   return (
     <Layout title="Network Security">
       <StatGrid>
-        <StatCard icon={<Grid size={30} />} count={690} label="Events" onClick={() => alert("Events clicked")} />
-        <StatCard
-          icon={<Users size={30} />}
-          count={120}
-          label="Active Agents"
-          onClick={() => alert("Active Agents clicked")}
-        />
+        <StatCard icon={<BrickWallFire size={30} />} label="Firewall" onClick={() => navigate("/network/firewallRules")} />
+        <StatCard icon={<Search size={30} />} label="Network Scan" onClick={() => navigate("/network/networkScan")}/>
         <StatCard
           icon={<AlertTriangle size={30} />}
           count={95}

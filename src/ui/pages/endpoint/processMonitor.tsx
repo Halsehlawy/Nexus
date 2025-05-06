@@ -23,6 +23,9 @@ const ProcessMonitor = () => {
   const [sortField, setSortField] = useState<keyof Process>("pid")
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
 
+  // ✅ New state
+  const [selectedPid, setSelectedPid] = useState<number | null>(null)
+
   const fetchProcesses = async () => {
     setLoading(true)
     try {
@@ -33,6 +36,30 @@ const ProcessMonitor = () => {
       console.error(err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // ✅ Kill selected process
+  const handleKill = async () => {
+    if (!selectedPid) return
+    try {
+      const res = await fetch("http://127.0.0.1:8000/kill-process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pid: selectedPid })
+      })
+
+      if (!res.ok) {
+        const err = await res.json()
+        alert("Failed: " + err.detail)
+      } else {
+        const msg = await res.json()
+        alert(msg.message)
+        fetchProcesses()
+        setSelectedPid(null)
+      }
+    } catch (err) {
+      console.error(err)
     }
   }
 
@@ -82,16 +109,25 @@ const ProcessMonitor = () => {
       </div>
 
       <div className="process-container-wide">
-      <div className="table-header">
-        <h2 className="process-title">Active Processes</h2>
-        <div className="search-bar">
+        <div className="table-header">
+          <h2 className="process-title">Active Processes</h2>
+          <div className="search-bar">
             <input
-            type="text"
-            placeholder="Search by name or user..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+              type="text"
+              placeholder="Search by name or user..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
             />
-        </div>
+            {/* ✅ Kill button next to search */}
+            <button
+              className="button"
+              onClick={handleKill}
+              style={{ marginLeft: "10px" }}
+              disabled={!selectedPid}
+            >
+              Kill Process
+            </button>
+          </div>
         </div>
 
         {loading ? (
@@ -110,7 +146,12 @@ const ProcessMonitor = () => {
             </thead>
             <tbody>
               {filteredProcesses.map(proc => (
-                <tr key={proc.pid}>
+                <tr
+                  key={proc.pid}
+                  onClick={() => setSelectedPid(proc.pid === selectedPid ? null : proc.pid)}
+                  className={proc.pid === selectedPid ? "selected-row" : ""}
+                  style={{ cursor: "pointer" }}
+                >
                   <td>{proc.pid}</td>
                   <td>{proc.name}</td>
                   <td>{proc.user || "N/A"}</td>
