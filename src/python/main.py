@@ -17,7 +17,7 @@ from firewallManager import (
     update_firewall_rule
 )
 from networkScanner import get_all_subnets, run_nmap_scan
-from logAnalyzer import get_recent_logs
+from logAnalyzer import analyze_logs
 
 app = FastAPI()
 executor = ThreadPoolExecutor()
@@ -144,5 +144,5 @@ async def scan_network(request: Request):
 
 @app.get("/logs")
 def read_logs():
-    logs = get_recent_logs()
+    logs = analyze_logs()
     return { "logs": logs }

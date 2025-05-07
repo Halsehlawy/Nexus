@@ -8,6 +8,8 @@ type LogEntry = {
   timestamp?: string
   event_id?: number
   type?: string
+  severity?: string
+  suspicious?: boolean
   source?: string
   computer?: string
   message?: string
@@ -27,9 +29,6 @@ const LogAnalysis = () => {
       try {
         const res = await fetch("http://127.0.0.1:8000/logs")
         const data = await res.json()
-
-        console.log("Received logs:", data)
-
         if (data.logs && Array.isArray(data.logs)) {
           setLogs(data.logs)
         } else {
@@ -47,15 +46,13 @@ const LogAnalysis = () => {
   }, [])
 
   const filteredLogs = logs.filter((log) => {
-    const msg = typeof log?.message === "string" ? log.message : ""
-    const src = typeof log?.source === "string" ? log.source : ""
-    const type = typeof log?.type === "string" ? log.type : ""
     const term = searchTerm.toLowerCase()
-
     return (
-      msg.toLowerCase().includes(term) ||
-      src.toLowerCase().includes(term) ||
-      type.toLowerCase().includes(term)
+      log?.event_id?.toString().includes(term) ||
+      log?.type?.toLowerCase().includes(term) ||
+      log?.source?.toLowerCase().includes(term) ||
+      log?.message?.toLowerCase().includes(term) ||
+      log?.computer?.toLowerCase().includes(term)
     )
   })
 
@@ -68,36 +65,46 @@ const LogAnalysis = () => {
         </button>
       </div>
 
-      <div className="scan-header">
-        <h3 className="section-title">Recent Security Events</h3>
-        <div className="scan-controls">
+      <div className="log-header">
+        <h3 className="log-title">Recent Security Events</h3>
+        <div className="log-controls">
           <input
             type="text"
             placeholder="Search by message, source, or type"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ padding: "8px", backgroundColor: "#2a2a2a", border: "1px solid #444", color: "#fff", borderRadius: "4px", width: "300px" }}
+            className="log-search"
           />
         </div>
       </div>
 
       {loading ? (
-        <p className="loading-text">Loading logs...</p>
+        <p className="log-loading-text">Loading logs...</p>
       ) : error ? (
-        <div className="result-box result-danger">
+        <div className="log-error-box">
           <p>{error}</p>
         </div>
       ) : (
-        <div className="scan-results">
+        <div className="log-results">
           <p style={{ color: "#ccc", fontStyle: "italic" }}>
             Showing {filteredLogs.length} of {logs.length} logs
           </p>
           {filteredLogs.length === 0 ? (
-            <p className="loading-text">No matching logs found.</p>
+            <p className="log-loading-text">No matching logs found.</p>
           ) : (
             filteredLogs.map((log, i) => (
-              <div key={i} className="result-card">
-                <h4>{log.timestamp || "Unknown time"}</h4>
+              <div
+                key={i}
+                className={`log-card ${log.suspicious ? "suspicious" : ""}`}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <h4>{log.timestamp || "Unknown time"}</h4>
+                  {log.severity && (
+                    <span className={`log-severity log-severity-${log.severity.toLowerCase()}`}>
+                      {log.severity}
+                    </span>
+                  )}
+                </div>
                 <p><strong>Event ID:</strong> {log.event_id ?? "?"}</p>
                 <p><strong>Type:</strong> {log.type ?? "Unknown"}</p>
                 <p><strong>Source:</strong> {log.source ?? "Unknown"}</p>

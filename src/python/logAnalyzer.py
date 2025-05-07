@@ -1,77 +1,56 @@
 import win32evtlog
-import win32evtlogutil
-import win32con
 
-def get_recent_logs(limit=100, log_type="Security"):
-    server = None  # Local machine
+def analyze_logs():
+    server = 'localhost'
+    log_type = 'Security'
+    hand = win32evtlog.OpenEventLog(server, log_type)
+    total = win32evtlog.GetNumberOfEventLogRecords(hand)
+
+    logs = []
     flags = win32evtlog.EVENTLOG_BACKWARDS_READ | win32evtlog.EVENTLOG_SEQUENTIAL_READ
-    events = []
+    events = win32evtlog.ReadEventLog(hand, flags, 0)
 
-    def parse_event(event):
-        try:
-            event_type = event.EventType
-            event_id = event.EventID & 0xFFFF
+    # Clean, descriptive event names
+    event_descriptions = {
+        4624: "Account successfully logged in",
+        4625: "Failed login attempt",
+        4634: "Account logged off",
+        4672: "Special privileges assigned to new logon",
+        4688: "New process created",
+        4720: "New user account created",
+        4722: "User account enabled",
+        4725: "User account disabled",
+        4726: "User account deleted",
+        4732: "User added to a security-enabled local group",
+        4768: "Kerberos authentication ticket requested",
+        4769: "Kerberos service ticket requested",
+        4771: "Kerberos pre-authentication failed",
+    }
+
+    severity_map = {
+        win32evtlog.EVENTLOG_INFORMATION_TYPE: "Low",
+        win32evtlog.EVENTLOG_WARNING_TYPE: "Medium",
+        win32evtlog.EVENTLOG_ERROR_TYPE: "High"
+    }
+
+    if events:
+        for event in events[:100]:
+            event_id = event.EventID
             source = event.SourceName
-            timestamp = event.TimeGenerated.Format()
-            computer = event.ComputerName
+            severity = severity_map.get(event.EventType, "Unknown")
+            description = event_descriptions.get(event_id, f"Security event ({event_id})")
 
-            # Try normal formatting
-            try:
-                message = win32evtlogutil.SafeFormatMessage(event, source).strip()
-            except Exception:
-                inserts = event.StringInserts if event.StringInserts else []
-                message = " | ".join([str(i) for i in inserts])
+            suspicious = event_id in [4625, 4672, 4720, 4726, 4771]
 
-            # Add friendly label for common event IDs
-            friendly_names = {
-                4624: "✅ Successful Logon",
-                4625: "❌ Failed Logon",
-                4672: "🔒 Special Privileges Assigned",
-                4688: "🛠️ New Process Created",
-                4648: "🔐 Logon Using Explicit Credentials",
-                5379: "🔑 Credential Validation",
-            }
-            event_name = friendly_names.get(event_id, "")
-
-            return {
-                "timestamp": timestamp,
+            logs.append({
+                "timestamp": str(event.TimeGenerated),
                 "event_id": event_id,
-                "type": {
-                    1: "Error",
-                    2: "Warning",
-                    4: "Information",
-                    8: "Audit Success",
-                    16: "Audit Failure"
-                }.get(event_type, "Unknown"),
+                "type": description,
                 "source": source,
-                "computer": computer,
-                "message": f"{event_name}\n{message}" if event_name else message
-            }
-        except Exception as e:
-            return { "error": f"Parse error: {str(e)}" }
+                "computer": event.ComputerName,
+                "message": description,
+                "severity": severity,
+                "suspicious": suspicious
+            })
 
-    try:
-        log_handle = win32evtlog.OpenEventLog(server, log_type)
-        total = 0
-
-        while True:
-            records = win32evtlog.ReadEventLog(log_handle, flags, 0)
-            if not records:
-                break
-
-            for event in records:
-                parsed = parse_event(event)
-                if "error" not in parsed:
-                    events.append(parsed)
-                    total += 1
-                if total >= limit:
-                    break
-
-            if total >= limit:
-                break
-
-        win32evtlog.CloseEventLog(log_handle)
-        return events
-
-    except Exception as e:
-        return [{ "error": f"Log read error: {str(e)}" }]
+    return logs

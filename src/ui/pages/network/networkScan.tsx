@@ -81,7 +81,7 @@ const NetworkScan = () => {
         </div>
       </div>
 
-      {loading && <p className="loading-text">Running Nmap scan, please wait...</p>}
+      {loading && <p className="loading-text">Running Nmap scan, please wait... <span className="spinner-inline"></span></p>}
 
       {results && results.error && (
         <div className="result-box result-danger">

@@ -58,10 +58,24 @@
 /* === Input Fields & Buttons === */
 .input {
   padding: 8px 12px;
-  background-color: #2a2a2a;
-  color: #ffffff;
-  border: 1px solid #444444;
+  background-color: #1f1f1f;
+  color: var(--text-secondary);
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+.input[type="file"]::file-selector-button {
+  background-color: #2e2e2e;
+  color: var(--text-primary);
+  border: none;
+  padding: 6px 14px;
+  margin-right: 12px;
   border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
 .button {
@@ -97,6 +111,7 @@
   border-collapse: collapse;
   font-size: 14px;
   color: #e0e0e0;
+  table-layout: auto;
 }
 
 .process-table th,
@@ -122,7 +137,7 @@
 /* === Flags & Loading === */
 .suspicious-flag {
   color: #ff4d4f;
-  font-weight: bold;
+  font-size: 10px;
 }
 
 .loading-text {
