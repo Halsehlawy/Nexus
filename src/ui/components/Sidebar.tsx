@@ -2,6 +2,7 @@
 
 import { useNavigate, useLocation } from "react-router-dom"
 import "../styles/sidebar.css"
+import { BrainCircuit, Monitor, Network, ServerIcon, User } from "lucide-react"
 
 const Sidebar = () => {
   const navigate = useNavigate()
@@ -24,35 +25,35 @@ const Sidebar = () => {
           className={`nav-item ${isActive("/server-management") ? "active" : ""}`}
           onClick={() => navigate("/server-management")}
         >
-          Server Management
+        {<ServerIcon size={20} />} Server Management
         </button>
 
         <button
           className={`nav-item ${isActive("/agent-management") ? "active" : ""}`}
           onClick={() => navigate("/agent-management")}
         >
-          Agent Management
+        {<User size={20} />}  Agent Management
         </button>
 
         <button
           className={`nav-item ${isActive("/endpoint-security") ? "active" : ""}`}
           onClick={() => navigate("/endpoint-security")}
         >
-          Endpoint Security
+          {<Monitor size={20} />}Endpoint Security
         </button>
 
         <button
           className={`nav-item ${isActive("/network-security") ? "active" : ""}`}
           onClick={() => navigate("/network-security")}
         >
-          Network Security
+        {<Network size={20} />}  Network Security
         </button>
 
         <button
           className={`nav-item ${isActive("/threat-intelligence") ? "active" : ""}`}
           onClick={() => navigate("/threat-intelligence")}
         >
-          Threat Intelligence
+        {<BrainCircuit size={20} />}  Threat Intelligence
         </button>
       </nav>
     </aside>

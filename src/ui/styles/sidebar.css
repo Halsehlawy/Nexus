@@ -43,6 +43,10 @@
   }
   
   .nav-item {
+    display: flex; /* ensures icon and text are on the same line */
+    align-items: center; /* vertically center icon and text */
+    gap: 8px; /* spacing between icon and label */
+  
     padding: var(--spacing-md);
     border: none;
     background: transparent;
@@ -68,4 +72,3 @@
     border-left: 3px solid var(--border-accent);
     padding-left: calc(var(--spacing-md) - 3px);
   }
-  

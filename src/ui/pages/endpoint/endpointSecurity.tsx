@@ -27,7 +27,7 @@ const EndpointSecurity = () => {
       </StatGrid>
 
       <div className="health-check-container">
-        <h3 className="section-title">Endpoint Health Check</h3>
+        <h3 className="section-title" style={{ marginBottom: "12px" }}>Endpoint Health Check</h3>
         {!checks ? (
           <div className="loading-spinner-container">
           <div className="loading-spinner"></div>

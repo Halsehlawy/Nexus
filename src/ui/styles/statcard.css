@@ -41,6 +41,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-lg);
-    margin-top: var(--spacing-lg);
+    margin-top: var(--spacing-xs);
   }
   

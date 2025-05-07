@@ -5,19 +5,19 @@ import os
 import shutil
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from .processMonitor import get_active_processes
-from .malwareScanner import upload_to_virustotal, fetch_vt_report
-from .portScanner import get_open_ports, close_port_by_pid
-from .startupManager import get_startup_programs, disable_startup_program
-from .healthCheck import run_all_checks
-from .firewallManager import (
+from processMonitor import get_active_processes
+from malwareScanner import upload_to_virustotal, fetch_vt_report
+from portScanner import get_open_ports, close_port_by_pid
+from startupManager import get_startup_programs, disable_startup_program
+from healthCheck import run_all_checks
+from firewallManager import (
     get_firewall_rules,
     create_firewall_rule,
     delete_firewall_rule,
     update_firewall_rule
 )
-from .networkScanner import get_all_subnets, run_nmap_scan
-
+from networkScanner import get_all_subnets, run_nmap_scan
+from logAnalyzer import get_recent_logs
 
 app = FastAPI()
 executor = ThreadPoolExecutor()
@@ -44,7 +44,7 @@ class KillRequest(BaseModel):
 
 @app.post("/kill-process")
 def kill_process_api(request: KillRequest):
-    from .processMonitor import kill_process
+    from processMonitor import kill_process
     result = kill_process(request.pid)
     if result["status"] == "error":
         raise HTTPException(status_code=400, detail=result["message"])
@@ -141,3 +141,8 @@ async def scan_network(request: Request):
     scan_type = body.get("scan_type")
     results = run_nmap_scan(scan_type, subnet)
     return results
+
+@app.get("/logs")
+def read_logs():
+    logs = get_recent_logs()
+    return { "logs": logs }
