@@ -10,6 +10,7 @@ interface LogEntry {
   type?: string
   severity?: string
   suspicious?: boolean
+  system_generated?: boolean
   source?: string
   computer?: string
   message?: string
@@ -24,16 +25,34 @@ const LogAnalysis = () => {
   const [error, setError] = useState<string | null>(null)
   const [showSuspiciousOnly, setShowSuspiciousOnly] = useState(false)
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
+  const [newKeys, setNewKeys] = useState<Set<string>>(new Set())
+
+  const toggleSuspicious = () => {
+    setShowSuspiciousOnly(prev => !prev)
+    setExpandedIndex(null)
+  }
 
   useEffect(() => {
     const fetchLogs = async () => {
-      setLoading(true)
-      setError(null)
       try {
         const res = await fetch("http://127.0.0.1:8000/logs")
         const data = await res.json()
+
         if (data.logs && Array.isArray(data.logs)) {
-          setLogs(data.logs)
+          setLogs(prevLogs => {
+            const prevKeys = new Set(prevLogs.map(log => `${log.timestamp}_${log.event_id}`))
+            const incomingLogs: LogEntry[] = data.logs
+            const newLogItems = incomingLogs.filter(
+              log => !prevKeys.has(`${log.timestamp}_${log.event_id}`)
+            )
+
+            if (newLogItems.length > 0) {
+              const newKeySet = new Set(newLogItems.map(log => `${log.timestamp}_${log.event_id}`))
+              setNewKeys(newKeySet)
+            }
+
+            return [...newLogItems, ...prevLogs].slice(0, 100)
+          })
         } else {
           setError("No logs found or format incorrect.")
         }
@@ -46,12 +65,9 @@ const LogAnalysis = () => {
     }
 
     fetchLogs()
+    const interval = setInterval(fetchLogs, 5000)
+    return () => clearInterval(interval)
   }, [])
-
-  const toggleSuspicious = () => {
-    setShowSuspiciousOnly(prev => !prev)
-    setExpandedIndex(null)
-  }
 
   const filteredLogs = logs.filter((log) => {
     if (showSuspiciousOnly && !log.suspicious) return false
@@ -71,9 +87,8 @@ const LogAnalysis = () => {
   return (
     <Layout title="Log Analysis">
       <div className="back-button-container">
-        <button className="back-button" onClick={() => navigate("/network-security")}>
-          <ArrowLeft size={16} style={{ marginRight: "6px" }} />
-          Go Back
+        <button className="back-button" onClick={() => navigate("/network-security")}> 
+          <ArrowLeft size={16} style={{ marginRight: "6px" }} /> Go Back
         </button>
       </div>
 
@@ -92,6 +107,7 @@ const LogAnalysis = () => {
           </button>
         </div>
       </div>
+
       <div className="log-summary-bar">
         <span>Total: {logs.length}</span>
         <span>Suspicious: {logs.filter(l => l.suspicious).length}</span>
@@ -107,48 +123,52 @@ const LogAnalysis = () => {
           <p>{error}</p>
         </div>
       ) : (
-        
         <div className="log-results">
           {filteredLogs.length === 0 ? (
             <p className="log-loading-text">No logs match your filters.</p>
           ) : (
-            filteredLogs.map((log, index) => (
-              <div
-                key={index}
-                className={`log-card ${log.suspicious ? "suspicious" : ""}`}
-                onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
-              >
-              <div className="log-summary">
-                <span className="log-text-left">
-                  <strong>{log.timestamp}</strong> — {log.message}
-                </span>
-                {log.severity && (
-                  <span className={`log-severity log-severity-${log.severity.toLowerCase()}`}>
-                    {log.severity}
-                  </span>
-                )}
-              </div>
+            filteredLogs.map((log, index) => {
+              const key = `${log.timestamp}_${log.event_id}`
+              const isNew = newKeys.has(key)
 
-
-                {expandedIndex === index && (
-                  <div className="log-details">
-                    <p><strong>Event ID:</strong> {log.event_id}</p>
-                    <p><strong>Source:</strong> {log.source}</p>
-                    <p><strong>Computer:</strong> {log.computer}</p>
-                    {log.details && Object.keys(log.details).length > 0 && (
-                      <>
-                        <p><strong>Details:</strong></p>
-                        <ul>
-                          {Object.entries(log.details).map(([key, value], i) => (
-                            <li key={i}><strong>{key}:</strong> {value}</li>
-                          ))}
-                        </ul>
-                      </>
+              return (
+                <div
+                  key={key}
+                  className={`log-card ${log.suspicious ? "suspicious" : ""} ${isNew ? "fade-in" : ""}`}
+                  onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                >
+                  <div className="log-summary">
+                    <span className="log-text-left">
+                      <strong>{log.timestamp}</strong> — {log.message}
+                    </span>
+                    {log.severity && (
+                      <span className={`log-severity log-severity-${log.severity.toLowerCase()}`}>
+                        {log.severity}
+                      </span>
                     )}
                   </div>
-                )}
-              </div>
-            ))
+
+                  {expandedIndex === index && (
+                    <div className="log-details">
+                      <p><strong>Event ID:</strong> {log.event_id}</p>
+                      <p><strong>Type:</strong> {log.type}</p>
+                      <p><strong>Source:</strong> {log.source}</p>
+                      <p><strong>Computer:</strong> {log.computer}</p>
+                      {log.details && Object.keys(log.details).length > 0 && (
+                        <>
+                          <p><strong>Details:</strong></p>
+                          <ul>
+                            {Object.entries(log.details).map(([key, value], i) => (
+                              <li key={i}><strong>{key}:</strong> {value}</li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })
           )}
         </div>
       )}
@@ -156,4 +176,4 @@ const LogAnalysis = () => {
   )
 }
 
-export default LogAnalysis
+export default LogAnalysis;

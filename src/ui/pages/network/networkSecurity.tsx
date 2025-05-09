@@ -14,7 +14,7 @@ const NetworkSecurity = () => {
       <StatGrid>
         <StatCard icon={<BrickWallFire size={30} />} label="Firewall" onClick={() => navigate("/network/firewallRules")} />
         <StatCard icon={<Search size={30} />} label="Network Scan" onClick={() => navigate("/network/networkScan")}/>
-        <StatCard icon={<FileClock size={30} />} label="Log Analysis" onClick={() => navigate("/network/logAnalysis")}/>
+        <StatCard icon={<FileClock size={30} />} label="Logs" onClick={() => navigate("/network/logAnalysis")}/>
         <StatCard
           icon={<Crosshair size={30} />}
           count={23}
