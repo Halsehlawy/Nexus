@@ -1,11 +1,11 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException,Body, Request
+from fastapi import FastAPI, UploadFile, File, HTTPException,Body, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 import shutil
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from processMonitor import get_active_processes
+from processMonitor import get_active_processes, kill_process
 from malwareScanner import upload_to_virustotal, fetch_vt_report
 from portScanner import get_open_ports, close_port_by_pid
 from startupManager import get_startup_programs, disable_startup_program
@@ -36,18 +36,22 @@ def get_health_status():
     return run_all_checks()
 ## process monitor 
 @app.get("/processes")
-def read_processes():
-    return {"processes": get_active_processes()}
+def list_processes():
+    return get_active_processes()
 
+# Request body model for kill-process
 class KillRequest(BaseModel):
     pid: int
 
-@app.post("/kill-process")
+# Kill process endpoint
+@app.post("/kill-process", status_code=status.HTTP_200_OK)
 def kill_process_api(request: KillRequest):
-    from processMonitor import kill_process
+    print(f"[KILL] Attempting to terminate PID {request.pid}")
     result = kill_process(request.pid)
+
     if result["status"] == "error":
         raise HTTPException(status_code=400, detail=result["message"])
+
     return result
 
 ## malware scanner

@@ -54,6 +54,51 @@
 .back-button:hover {
   background-color: #2d2d2d;
 }
+.highlight-red {
+  color: #ff4d4d;
+  font-weight: bold;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.tooltip-container.left .tooltip-content {
+  left: auto;
+  right: 100%;
+  top: 0;
+  margin-right: 10px;
+}
+
+.tooltip-content {
+  display: none;
+  position: absolute;
+  background-color: #4c0000;
+  color: #fff;
+  padding: 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  width: 250px;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.tooltip-content ul {
+  padding-left: 16px;
+  margin: 0;
+}
+
+.tooltip-content li {
+  list-style: disc;
+  margin-bottom: 4px;
+}
+
+.tooltip-container:hover .tooltip-content {
+  display: block;
+}
+
 
 /* === Input Fields & Buttons === */
 .input {
