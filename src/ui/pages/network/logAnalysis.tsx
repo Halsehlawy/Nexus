@@ -129,7 +129,6 @@ const LogAnalysis = () => {
                 )}
               </div>
 
-
                 {expandedIndex === index && (
                   <div className="log-details">
                     <p><strong>Event ID:</strong> {log.event_id}</p>
