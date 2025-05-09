@@ -139,8 +139,8 @@ const ProcessMonitor = () => {
                 <th onClick={() => handleSort("pid")}>PID</th>
                 <th onClick={() => handleSort("name")}>Name</th>
                 <th onClick={() => handleSort("user")}>User</th>
-                <th onClick={() => handleSort("cpu")}>CPU %</th>
-                <th onClick={() => handleSort("memory")}>Memory (MB)</th>
+                <th onClick={() => handleSort("cpu")}>CPU </th>
+                <th onClick={() => handleSort("memory")}>RAM</th>
                 <th onClick={() => handleSort("suspicious")}>Suspicious</th>
               </tr>
             </thead>
