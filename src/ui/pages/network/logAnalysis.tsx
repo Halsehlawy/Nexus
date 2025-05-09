@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Layout from "../../components/Layout"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, RefreshCcw } from "lucide-react"
 import "../../styles/NetworkSecurity.css"
 
 interface LogEntry {
@@ -10,7 +10,6 @@ interface LogEntry {
   type?: string
   severity?: string
   suspicious?: boolean
-  system_generated?: boolean
   source?: string
   computer?: string
   message?: string
@@ -32,41 +31,38 @@ const LogAnalysis = () => {
     setExpandedIndex(null)
   }
 
-  useEffect(() => {
-    const fetchLogs = async () => {
-      try {
-        const res = await fetch("http://127.0.0.1:8000/logs")
-        const data = await res.json()
+  const fetchLogs = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch("http://127.0.0.1:8000/logs")
+      const data = await res.json()
 
-        if (data.logs && Array.isArray(data.logs)) {
-          setLogs(prevLogs => {
-            const prevKeys = new Set(prevLogs.map(log => `${log.timestamp}_${log.event_id}`))
-            const incomingLogs: LogEntry[] = data.logs
-            const newLogItems = incomingLogs.filter(
-              log => !prevKeys.has(`${log.timestamp}_${log.event_id}`)
+      if (data.logs && Array.isArray(data.logs)) {
+        setLogs(prevLogs => {
+          const prevKeys = new Set(prevLogs.map(log => `${log.timestamp}_${log.event_id}`))
+            const newLogItems: LogEntry[] = data.logs.filter(
+            (log: LogEntry) => !prevKeys.has(`${log.timestamp}_${log.event_id}`)
             )
-
-            if (newLogItems.length > 0) {
-              const newKeySet = new Set(newLogItems.map(log => `${log.timestamp}_${log.event_id}`))
-              setNewKeys(newKeySet)
-            }
-
-            return [...newLogItems, ...prevLogs].slice(0, 100)
-          })
-        } else {
-          setError("No logs found or format incorrect.")
-        }
-      } catch (err) {
-        console.error("Error fetching logs", err)
-        setError("Error loading logs")
-      } finally {
-        setLoading(false)
+          if (newLogItems.length > 0) {
+            const newKeySet = new Set(newLogItems.map(log => `${log.timestamp}_${log.event_id}`))
+            setNewKeys(newKeySet)
+          }
+          return [...newLogItems, ...prevLogs].slice(0, 100)
+        })
+      } else {
+        setError("No logs found or format incorrect.")
       }
+    } catch (err) {
+      console.error("Error fetching logs", err)
+      setError("Error loading logs")
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchLogs()
-    const interval = setInterval(fetchLogs, 5000)
-    return () => clearInterval(interval)
   }, [])
 
   const filteredLogs = logs.filter((log) => {
@@ -87,8 +83,9 @@ const LogAnalysis = () => {
   return (
     <Layout title="Log Analysis">
       <div className="back-button-container">
-        <button className="back-button" onClick={() => navigate("/network-security")}> 
-          <ArrowLeft size={16} style={{ marginRight: "6px" }} /> Go Back
+        <button className="back-button" onClick={() => navigate("/network-security")}>
+          <ArrowLeft size={16} style={{ marginRight: "6px" }} />
+          Go Back
         </button>
       </div>
 
@@ -104,6 +101,10 @@ const LogAnalysis = () => {
           />
           <button className="log-toggle-button" onClick={toggleSuspicious}>
             {showSuspiciousOnly ? "Show All" : "Show Only Suspicious"}
+          </button>
+          <button className="log-toggle-button" onClick={fetchLogs}>
+            <RefreshCcw size={14} style={{ marginRight: "6px" }} />
+            Refresh Logs
           </button>
         </div>
       </div>
@@ -176,4 +177,4 @@ const LogAnalysis = () => {
   )
 }
 
-export default LogAnalysis;
+export default LogAnalysis
