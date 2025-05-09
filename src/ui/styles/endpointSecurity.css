@@ -9,16 +9,28 @@
   border-radius: 8px;
   color: #ffffff;
   max-height: 500px;
-  overflow-y: auto;
+  
 }
 
 /* === Header (Title + Search) === */
 .table-header,
 .section-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background-color: #1a1a1a;
+  padding: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  border-bottom: 1px solid #444;
+}
+.process-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #1a1a1a;
+  z-index: 2;
+  padding: 8px;
 }
 
 .process-title,
@@ -29,7 +41,11 @@
   margin: 0;
   color: #ffffff;
 }
-
+.table-wrapper {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid #333;
+}
 /* === Back Button === */
 .back-button-container {
   width: 850px;

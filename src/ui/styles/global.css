@@ -54,6 +54,8 @@
     background-color: var(--background-main);
     color: var(--text-secondary);
     line-height: 1.5;
+    height: 100%;
+    overflow: hidden; /* 🔒 Prevent all page scrollbars */
   }
   
   /* Custom scrollbar */
