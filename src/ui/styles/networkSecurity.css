@@ -174,96 +174,189 @@
     font-size: 14px;
     color: #dddddd;
   }
+/* === Log Section === */
+/* === Log Header === */
+.log-header {
+  width: 850px;
+  margin: 10px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .log-header {
-    width: 850px;
-    margin: 10px auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .log-title {
-    font-size: 20px;
-    font-weight: bold;
-    color: #ffffff;
-    margin: 0;
-  }
-  
-  .log-search {
-    padding: 8px 12px;
-    background-color: #2a2a2a;
-    color: #ffffff;
-    border: 1px solid #444444;
-    border-radius: 4px;
-    width: 280px;
-  }
-  
-  .log-results {
-    width: 850px;
-    margin: 20px auto;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  
-  .log-card {
-    border: 1px solid #444444;
-    border-radius: 6px;
-    padding: 16px;
-    background-color: #1e1e1e;
-    color: #ffffff;
-    font-size: 14px;
-    line-height: 1.6;
-  }
-  
-  .log-card.suspicious {
-    border: 1px solid #ff4d4f;
-    background-color: #2a1e1e;
-  }
-  
-  .log-card p {
-    margin: 4px 0;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-  }
-  
-  /* Severity badges */
-  .log-severity {
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
-    color: white;
-    align-self: center;
-  }
-  
-  .log-severity-high {
-    background-color: #ff4d4f;
-  }
-  .log-severity-medium {
-    background-color: #faad14;
-  }
-  .log-severity-low {
-    background-color: #52c41a;
-  }
-  
-  /* Loading/Error */
-  .log-loading-text {
-    text-align: center;
-    font-style: italic;
-    color: #aaaaaa;
-  }
-  
-  .log-error-box {
-    width: 850px;
-    margin: 20px auto;
-    padding: 12px;
-    border: 1px solid #ff4d4f;
-    color: #ff4d4f;
-    background-color: #2a1e1e;
-    border-radius: 6px;
-  }
+.log-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 0;
+}
 
+.log-controls {
+  display: flex;
+  gap: 12px;
+}
+
+/* === Search Bar === */
+.log-search {
+  padding: 8px 12px;
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #444444;
+  border-radius: 4px;
+  width: 260px;
+}
+
+/* === Toggle Button === */
+.log-toggle-button {
+  padding: 8px 12px;
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #444444;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.log-toggle-button:hover {
+  background-color: #333333;
+}
+
+/* === Log Results List === */
+.log-results {
+  width: 850px;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* === Individual Log Card === */
+.log-card {
+  border: 1px solid #444444;
+  border-radius: 6px;
+  padding: 12px 16px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.log-card:hover {
+  background-color: #262626;
+}
+
+/* === Highlight suspicious logs === */
+.log-card.suspicious {
+  border: 1px solid #ff4d4f;
+  background-color: #2a1e1e;
+}
+
+/* === Log Summary View === */
+.log-summary {
+  font-size: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   
-  
+  justify-content: space-between; /* ✅ Align left */
+}
+
+
+.log-severity {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #ffffff;
+  justify-content: flex-end
+}
+
+.log-severity-high {
+  background-color: #ff4d4f;
+}
+
+.log-severity-medium {
+  background-color: #faad14;
+}
+
+.log-severity-low {
+  background-color: #52c41a;
+}
+
+/* === Expanded Details === */
+/* === Expanded Log Details Section === */
+.log-details {
+  margin-top: 10px;
+  font-size: 13px;
+  border-top: 1px solid #333;
+  padding-top: 8px;
+  line-height: 1.6;
+  color: #dddddd;
+  text-align: left;
+
+}
+.log-details p {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 4px;
+  align-items: flex-start;
+  white-space: pre-wrap;
+}
+
+.log-details p strong {
+  min-width: 120px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: left;
+}
+
+.log-details ul {
+  margin-top: 6px;
+  padding-left: 0;             
+  list-style: none;            
+}
+
+.log-details li {
+  margin-bottom: 4px;
+  display: flex;
+  gap: 5px;                   /* Simulate tab space */
+  white-space: pre-wrap;
+  align-items: flex-start;
+}
+
+.log-details li strong {
+  min-width: 120px;            /* Align field labels */
+  color: #ffffff;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* === Loading and Error === */
+.log-loading-text {
+  text-align: center;
+  color: #cccccc;
+  font-style: italic;
+}
+
+.log-error-box {
+  width: 850px;
+  margin: 20px auto;
+  padding: 12px;
+  border: 1px solid #ff4d4f;
+  background-color: #2a1e1e;
+  color: #ff4d4f;
+  border-radius: 6px;
+}
+.log-summary-bar {
+  width: 830px;
+  margin: 10px auto 0 auto;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  color: #cccccc;
+  background-color: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 8px 12px;
+}

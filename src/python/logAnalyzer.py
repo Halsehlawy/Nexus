@@ -1,56 +1,129 @@
 import win32evtlog
 
+LOGON_TYPES = {
+    "2": "Interactive",
+    "3": "Network",
+    "4": "Batch",
+    "5": "Service",
+    "7": "Unlock",
+    "8": "Cleartext",
+    "9": "RunAs (NewCredentials)",
+    "10": "Remote (RDP)",
+    "11": "CachedInteractive"
+}
+
 def analyze_logs():
     server = 'localhost'
     log_type = 'Security'
     hand = win32evtlog.OpenEventLog(server, log_type)
-    total = win32evtlog.GetNumberOfEventLogRecords(hand)
-
     logs = []
     flags = win32evtlog.EVENTLOG_BACKWARDS_READ | win32evtlog.EVENTLOG_SEQUENTIAL_READ
-    events = win32evtlog.ReadEventLog(hand, flags, 0)
+    read_count = 0
+    max_logs = 100
 
-    # Clean, descriptive event names
     event_descriptions = {
-        4624: "Account successfully logged in",
-        4625: "Failed login attempt",
-        4634: "Account logged off",
-        4672: "Special privileges assigned to new logon",
+        4624: "Successful logon",
+        4625: "Failed logon",
+        4672: "Privileged logon",
         4688: "New process created",
-        4720: "New user account created",
-        4722: "User account enabled",
-        4725: "User account disabled",
-        4726: "User account deleted",
-        4732: "User added to a security-enabled local group",
-        4768: "Kerberos authentication ticket requested",
-        4769: "Kerberos service ticket requested",
-        4771: "Kerberos pre-authentication failed",
+        4720: "User account created"
     }
 
     severity_map = {
-        win32evtlog.EVENTLOG_INFORMATION_TYPE: "Low",
-        win32evtlog.EVENTLOG_WARNING_TYPE: "Medium",
-        win32evtlog.EVENTLOG_ERROR_TYPE: "High"
+        1: "High",   # Error
+        2: "Medium", # Warning
+        4: "Low",    # Info
+        8: "Low",    # Audit Success
+        16: "High"   # Audit Failure
     }
 
-    if events:
-        for event in events[:100]:
-            event_id = event.EventID
-            source = event.SourceName
-            severity = severity_map.get(event.EventType, "Unknown")
-            description = event_descriptions.get(event_id, f"Security event ({event_id})")
+    while read_count < max_logs:
+        events = win32evtlog.ReadEventLog(hand, flags, 0)
+        if not events:
+            break
 
-            suspicious = event_id in [4625, 4672, 4720, 4726, 4771]
+        for event in events:
+            if read_count >= max_logs:
+                break
+
+            event_id = event.EventID & 0xFFFF
+            inserts = event.StringInserts or []
+            extra = {}
+            message = event_descriptions.get(event_id, f"Security event ({event_id})")
+
+            if event_id == 4625 and len(inserts) >= 19:
+                raw_user = inserts[5] or "-"
+                raw_logon_type = inserts[8] or "-"
+                raw_source_ip = inserts[18] if len(inserts) > 18 else "N/A"
+
+                username = raw_user if raw_user not in ["-", ""] else "SYSTEM or background process"
+                logon_type = LOGON_TYPES.get(raw_logon_type, f"Type {raw_logon_type}" if not raw_logon_type.startswith("%%") else "Unknown")
+                source_ip = raw_source_ip if raw_source_ip and "." in raw_source_ip else "N/A"
+
+                extra = {
+                    "username": username,
+                    "logon_type": logon_type,
+                    "workstation": inserts[10] if len(inserts) > 10 else "-",
+                    "failure_reason": inserts[11] if len(inserts) > 11 else "-",
+                    "source_ip": source_ip
+                }
+
+                message = (
+                    "❌ Failed system-level login (no username or IP)"
+                    if username == "SYSTEM or background process" or source_ip == "N/A"
+                    else f"❌ Failed login for {username} from {source_ip} ({logon_type})"
+                )
+
+            elif event_id == 4624 and len(inserts) >= 18:
+                logon_code = inserts[8]
+                logon_type = LOGON_TYPES.get(logon_code, f"Type {logon_code}")
+                extra = {
+                    "username": inserts[5],
+                    "logon_type": logon_type,
+                    "source_ip": inserts[18],
+                    "workstation": inserts[11]
+                }
+                message = f"✅ Successful login for {inserts[5]} from {inserts[18]} ({logon_type})"
+
+            elif event_id == 4688 and len(inserts) >= 6:
+                extra = {
+                    "creator": inserts[1],
+                    "parent_process": inserts[3],
+                    "new_process": inserts[5],
+                    "command_line": inserts[6] if len(inserts) > 6 else "-"
+                }
+                message = f"⚙️ New process started: {inserts[5]}"
+
+            elif event_id == 4720 and len(inserts) >= 1:
+                extra = {
+                    "new_account": inserts[0]
+                }
+                message = f"👤 New user account created: {inserts[0]}"
+
+            elif event_id == 4672 and len(inserts) >= 1:
+                extra = {
+                    "username": inserts[1] if len(inserts) > 1 else "Unknown"
+                }
+                message = f"🔒 Privileged logon by {extra['username']}"
 
             logs.append({
                 "timestamp": str(event.TimeGenerated),
                 "event_id": event_id,
-                "type": description,
-                "source": source,
+                "type": event_descriptions.get(event_id, "Security Event"),
+                "source": event.SourceName,
                 "computer": event.ComputerName,
-                "message": description,
-                "severity": severity,
-                "suspicious": suspicious
+                "message": message,
+                "severity": severity_map.get(event.EventType, "Unknown"),
+                "suspicious": (
+                event_id == 4625 or
+                event_id == 4720 or
+                event_id == 4688 or
+                (event_id == 4672 and extra.get("username", "").upper() not in ["SYSTEM", "LOCAL SERVICE", "NETWORK SERVICE"])
+                    ),
+
+                "details": extra
             })
+
+            read_count += 1
 
     return logs

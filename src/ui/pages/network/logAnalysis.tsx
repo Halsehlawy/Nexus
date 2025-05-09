@@ -4,7 +4,7 @@ import Layout from "../../components/Layout"
 import { ArrowLeft } from "lucide-react"
 import "../../styles/NetworkSecurity.css"
 
-type LogEntry = {
+interface LogEntry {
   timestamp?: string
   event_id?: number
   type?: string
@@ -13,6 +13,7 @@ type LogEntry = {
   source?: string
   computer?: string
   message?: string
+  details?: { [key: string]: string }
 }
 
 const LogAnalysis = () => {
@@ -21,6 +22,8 @@ const LogAnalysis = () => {
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const [showSuspiciousOnly, setShowSuspiciousOnly] = useState(false)
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -45,14 +48,23 @@ const LogAnalysis = () => {
     fetchLogs()
   }, [])
 
+  const toggleSuspicious = () => {
+    setShowSuspiciousOnly(prev => !prev)
+    setExpandedIndex(null)
+  }
+
   const filteredLogs = logs.filter((log) => {
+    if (showSuspiciousOnly && !log.suspicious) return false
+
+    const msg = log.message?.toLowerCase() || ""
+    const src = log.source?.toLowerCase() || ""
+    const type = log.type?.toLowerCase() || ""
     const term = searchTerm.toLowerCase()
+
     return (
-      log?.event_id?.toString().includes(term) ||
-      log?.type?.toLowerCase().includes(term) ||
-      log?.source?.toLowerCase().includes(term) ||
-      log?.message?.toLowerCase().includes(term) ||
-      log?.computer?.toLowerCase().includes(term)
+      msg.includes(term) ||
+      src.includes(term) ||
+      type.includes(term)
     )
   })
 
@@ -66,16 +78,26 @@ const LogAnalysis = () => {
       </div>
 
       <div className="log-header">
-        <h3 className="log-title">Recent Security Events</h3>
+        <h3 className="log-title">Security Events</h3>
         <div className="log-controls">
           <input
             type="text"
-            placeholder="Search by message, source, or type"
+            placeholder="Search logs..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="log-search"
           />
+          <button className="log-toggle-button" onClick={toggleSuspicious}>
+            {showSuspiciousOnly ? "Show All" : "Show Only Suspicious"}
+          </button>
         </div>
+      </div>
+      <div className="log-summary-bar">
+        <span>Total: {logs.length}</span>
+        <span>Suspicious: {logs.filter(l => l.suspicious).length}</span>
+        <span>High: {logs.filter(l => l.severity?.toLowerCase() === 'high').length}</span>
+        <span>Medium: {logs.filter(l => l.severity?.toLowerCase() === 'medium').length}</span>
+        <span>Low: {logs.filter(l => l.severity?.toLowerCase() === 'low').length}</span>
       </div>
 
       {loading ? (
@@ -85,31 +107,46 @@ const LogAnalysis = () => {
           <p>{error}</p>
         </div>
       ) : (
+        
         <div className="log-results">
-          <p style={{ color: "#ccc", fontStyle: "italic" }}>
-            Showing {filteredLogs.length} of {logs.length} logs
-          </p>
           {filteredLogs.length === 0 ? (
-            <p className="log-loading-text">No matching logs found.</p>
+            <p className="log-loading-text">No logs match your filters.</p>
           ) : (
-            filteredLogs.map((log, i) => (
+            filteredLogs.map((log, index) => (
               <div
-                key={i}
+                key={index}
                 className={`log-card ${log.suspicious ? "suspicious" : ""}`}
+                onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
               >
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <h4>{log.timestamp || "Unknown time"}</h4>
-                  {log.severity && (
-                    <span className={`log-severity log-severity-${log.severity.toLowerCase()}`}>
-                      {log.severity}
-                    </span>
-                  )}
-                </div>
-                <p><strong>Event ID:</strong> {log.event_id ?? "?"}</p>
-                <p><strong>Type:</strong> {log.type ?? "Unknown"}</p>
-                <p><strong>Source:</strong> {log.source ?? "Unknown"}</p>
-                <p><strong>Computer:</strong> {log.computer ?? "Unknown"}</p>
-                <p><strong>Message:</strong> {log.message ?? "No message"}</p>
+              <div className="log-summary">
+                <span className="log-text-left">
+                  <strong>{log.timestamp}</strong> — {log.message}
+                </span>
+                {log.severity && (
+                  <span className={`log-severity log-severity-${log.severity.toLowerCase()}`}>
+                    {log.severity}
+                  </span>
+                )}
+              </div>
+
+
+                {expandedIndex === index && (
+                  <div className="log-details">
+                    <p><strong>Event ID:</strong> {log.event_id}</p>
+                    <p><strong>Source:</strong> {log.source}</p>
+                    <p><strong>Computer:</strong> {log.computer}</p>
+                    {log.details && Object.keys(log.details).length > 0 && (
+                      <>
+                        <p><strong>Details:</strong></p>
+                        <ul>
+                          {Object.entries(log.details).map(([key, value], i) => (
+                            <li key={i}><strong>{key}:</strong> {value}</li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             ))
           )}
