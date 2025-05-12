@@ -1,31 +1,42 @@
-/* === General Containers === */
-.process-container-wide,
-.malware-scan-container {
+/* ===================================================
+   GENERAL CONTAINERS & STRUCTURE
+   =================================================== */
+.container-box {
   width: 850px;
-  margin: 40px auto;
   background-color: #1e1e1e;
   padding: 20px;
   border: 1px solid #444444;
   border-radius: 8px;
   color: #ffffff;
-  max-height: 500px;
-  
+  margin: 20px auto;
 }
 
-/* === Header (Title + Search) === */
-.table-header,
-.section-header {
+.table-wrapper {
+  border: 1px solid #333;
+  overflow-y: auto;
+  max-height: 430px;
+}
+
+/* ===================================================
+   HEADERS (Sticky title bars, table headers)
+   =================================================== */
+.section-header,
+.table-header {
   position: sticky;
   top: 0;
   z-index: 3;
-  background-color: #1a1a1a;
+  background-color: #1a1a1a;  
   padding: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #444;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  margin-bottom: -2px;
 }
-.process-table thead th {
+
+.data-table thead th {
   position: sticky;
   top: 0;
   background-color: #1a1a1a;
@@ -33,48 +44,283 @@
   padding: 8px;
 }
 
-.process-title,
+/* ===================================================
+   TITLES
+   =================================================== */
 .section-title {
-  margin-bottom: 10px;
+  margin: 0 0 10px 0;
   font-size: 20px;
   font-weight: bold;
-  margin: 0;
   color: #ffffff;
-}
-.table-wrapper {
-  max-height: 500px;
-  overflow-y: auto;
-  border: 1px solid #333;
-}
-/* === Back Button === */
-.back-button-container {
-  width: 850px;
-  margin-bottom: 5px;
-  display: flex;
-  justify-content: flex-start;
+  text-align: left;
 }
 
-.back-button {
-  background: none;
-  color: #cccccc;
-  border: 1px solid #444444;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
+/* ===================================================
+   DATA TABLES
+   =================================================== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 14px;
-  transition: background 0.2s;
+  color: #e0e0e0;
+  table-layout: auto;
+  position: relative;
+  border-top: none;
 }
 
-.back-button:hover {
+.data-table th,
+.data-table td {
+  padding: 12px 16px;
+  border: 1px solid #444444;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: #2a2a2a;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  user-select: none;
+}
+
+.data-table tr:hover {
   background-color: #2d2d2d;
 }
-.highlight-red {
-  color: #ff4d4d;
+
+.selected-row {
+  background-color: #333333;
+}
+
+.suspicious-flag {
+  color: #ff4d4f;
+  font-size: 10px;
+}
+
+.data-table tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.data-table tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+/* ===================================================
+   MALWARE SCANNER
+   =================================================== */
+.scan-action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.result-box {
+  padding: 12px;
+  border-radius: 4px;
   font-weight: bold;
 }
 
+.result-safe {
+  color: #44ff44;
+  border: 1px solid #44ff44;
+}
+
+.result-danger {
+  color: #ff4d4f;
+  border: 1px solid #ff4d4f;
+}
+
+/* ===================================================
+   HEALTH CHECK
+   =================================================== */
+.health-check-container {
+  margin-top: 32px;
+  padding: 20px;
+  background-color: #1e1e1e;
+  border: 1px solid #444444;
+  border-radius: 6px;
+  color: #ffffff;
+}
+
+.health-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.health-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border-left: 4px solid transparent;
+  background-color: #2a2a2a;
+  border-radius: 4px;
+}
+
+.health-list li svg {
+  flex-shrink: 0;
+}
+
+.healthy {
+  color: #44ff44;
+  border-left-color: #44ff44;
+}
+
+.unhealthy {
+  color: #ff4d4f;
+  border-left-color: #ff4d4f;
+}
+
+/* ===================================================
+   LOG ANALYSIS
+   =================================================== */
+.log-results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.log-card {
+  border: 1px solid #444444;
+  border-radius: 6px;
+  padding: 12px 16px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.log-card:hover {
+  background-color: #262626;
+}
+
+.log-card.suspicious {
+  border: 1px solid #ff4d4f;
+  background-color: #2a1e1e;
+}
+
+.log-summary {
+  font-size: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.log-severity {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.log-severity-high {
+  background-color: #ff4d4f;
+}
+
+.log-severity-medium {
+  background-color: #faad14;
+}
+
+.log-severity-low {
+  background-color: #52c41a;
+}
+
+.log-details {
+  margin-top: 10px;
+  font-size: 13px;
+  border-top: 1px solid #333;
+  padding-top: 8px;
+  line-height: 1.6;
+  color: #dddddd;
+  text-align: left;
+}
+
+.log-details p {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 4px;
+  align-items: flex-start;
+  white-space: pre-wrap;
+}
+
+.log-details p strong {
+  min-width: 120px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: left;
+}
+.fade-in {
+  animation: fadeInSmooth 0.3s ease-out;
+}
+
+@keyframes fadeInSmooth {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.log-severity.selected {
+  outline: 2px solid #fff;
+  box-shadow: 0 0 0 2px #444;
+}
+.log-summary-bar {
+  width: 830px;
+  margin: 10px auto 10px auto;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  color: #cccccc;
+  background-color: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+.log-controls {
+  display: flex;
+  gap: 12px;
+}
+
+/* === Search Bar === */
+.log-search {
+  padding: 8px 12px;
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #444444;
+  border-radius: 4px;
+  width: 260px;
+}
+
+.log-header {
+  width: 850px;
+  margin: 10px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.log-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 0;
+}
+
+/* ===================================================
+   TOOLTIP STYLES
+   =================================================== */
 .tooltip-container {
   position: relative;
   display: inline-block;
@@ -115,8 +361,9 @@
   display: block;
 }
 
-
-/* === Input Fields & Buttons === */
+/* ===================================================
+   INPUT FIELDS & BUTTONS
+   =================================================== */
 .input {
   padding: 8px 12px;
   background-color: #1f1f1f;
@@ -127,6 +374,7 @@
   outline: none;
   transition: border 0.2s ease, box-shadow 0.2s ease;
 }
+
 .input[type="file"]::file-selector-button {
   background-color: #2e2e2e;
   color: var(--text-primary);
@@ -135,22 +383,25 @@
   margin-right: 12px;
   border-radius: 4px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 50;
   transition: background-color 0.2s ease;
 }
 
 .button {
-  padding: 8px 16px;
-  background-color: #2d2d2d;
-  color: #ffffff;
+  background: none;
+  color: #cccccc;
   border: 1px solid #444444;
+  padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
   transition: background 0.2s;
 }
 
 .button:hover {
-  background-color: #383838;
+  background-color: #2d2d2d;
 }
 
 .button:disabled {
@@ -158,7 +409,9 @@
   cursor: not-allowed;
 }
 
-/* === Row Alignment === */
+/* ===================================================
+   LAYOUT UTILITIES
+   =================================================== */
 .row-group {
   display: flex;
   gap: 12px;
@@ -166,124 +419,20 @@
   margin-bottom: 16px;
 }
 
-/* === Table === */
-.process-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  color: #e0e0e0;
-  table-layout: auto;
+.highlight-red {
+  color: #ff4d4d;
+  font-weight: bold;
 }
 
-.process-table th,
-.process-table td {
-  padding: 12px 16px;
-  border: 1px solid #444444;
-  text-align: left;
-}
-
-.process-table th {
-  background-color: #2a2a2a;
-  font-weight: 600;
-  color: #ffffff;
-  cursor: pointer;
-  user-select: none;
-}
-
-.process-table tr:hover {
-  background-color: #2d2d2d;
-}
-
-
-/* === Flags & Loading === */
-.suspicious-flag {
-  color: #ff4d4f;
-  font-size: 10px;
-}
-
+/* ===================================================
+   LOADING / SPINNER
+   =================================================== */
 .loading-text {
   text-align: center;
   color: #cccccc;
   font-style: italic;
 }
-.selected-row {
-  background-color: #333333;
-}
 
-/* === Scan Action Row (Scan left, Upload right) === */
-.scan-action-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-/* Result box styling is already in the file */
-.result-box {
-  padding: 12px;
-  border-radius: 4px;
-  font-weight: bold;
-}
-
-.result-safe {
-  color: #44ff44;
-  border: 1px solid #44ff44;
-}
-
-.result-danger {
-  color: #ff4d4f;
-  border: 1px solid #ff4d4f;
-}
-
-/* === Health Check Section === */
-.health-check-container {
-  margin-top: 32px;
-  padding: 20px;
-  background-color: #1e1e1e;
-  border: 1px solid #444444;
-  border-radius: 6px;
-  color: #ffffff;
-}
-
-.section-title {
-  text-align: left;
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 16px;
-}
-
-.health-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.health-list li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  border-left: 4px solid transparent;
-  background-color: #2a2a2a;
-  border-radius: 4px;
-}
-
-.health-list li svg {
-  flex-shrink: 0;
-}
-
-.healthy {
-  color: #44ff44;
-  border-left-color: #44ff44;
-}
-
-.unhealthy {
-  color: #ff4d4f;
-  border-left-color: #ff4d4f;
-}
-
-/* === Spinner === */
 .loading-spinner-container {
   display: flex;
   align-items: center;

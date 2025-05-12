@@ -1,103 +1,98 @@
 import subprocess
+import json
 import winreg
-import psutil
-import os
-import threading
+import wmi
+from fastapi import APIRouter
 
-def check_defender_status():
+router = APIRouter()
+
+def check_defender():
     try:
-        result = subprocess.check_output(
-            ['powershell', '-Command', 'Get-MpComputerStatus | Select -ExpandProperty RealTimeProtectionEnabled'],
-            stderr=subprocess.DEVNULL,
-            creationflags=0x08000000
-        ).decode().strip()
-        return result == 'True'
-    except:
-        return False
+        output = subprocess.check_output(
+            r'powershell -Command "Get-MpComputerStatus | ConvertTo-Json -Compress"',
+            shell=True
+        )
+        data = json.loads(output)
+        if data.get("RealTimeProtectionEnabled") and data.get("AMServiceEnabled"):
+            return {"key": "defender", "status": "healthy", "message": "Microsoft Defender is running"}
+    except Exception as e:
+        print("Defender check failed:", e)
+    return {"key": "defender", "status": "unhealthy", "message": "Microsoft Defender is not active"}
 
-def check_firewall_status():
+def check_firewall():
     try:
-        result = subprocess.check_output(
-            ['powershell', '-Command', 'Get-NetFirewallProfile | Select -ExpandProperty Enabled'],
-            stderr=subprocess.DEVNULL,
-            creationflags=0x08000000
-        ).decode().splitlines()
-        return all(line.strip() == 'True' for line in result if line.strip())
-    except:
-        return False
+        output = subprocess.check_output(
+            r'powershell -Command "(Get-NetFirewallProfile | Select-Object -ExpandProperty Enabled) -contains $false"',
+            shell=True
+        )
+        if output.decode().strip().lower() == "true":
+            return {"key": "firewall", "status": "unhealthy", "message": "Firewall is off on some profiles"}
+        return {"key": "firewall", "status": "healthy", "message": "Firewall is enabled on all profiles"}
+    except Exception as e:
+        print("Firewall check failed:", e)
+        return {"key": "firewall", "status": "unhealthy", "message": "Unable to verify firewall status"}
 
-def check_guest_account_enabled():
+def check_guest_account():
     try:
-        result = subprocess.check_output(
-            ['net', 'user', 'Guest'],
-            stderr=subprocess.DEVNULL,
-            creationflags=0x08000000
-        ).decode()
-        return "Account active               Yes" in result
-    except:
-        return False
+        output = subprocess.check_output("net user guest", shell=True).decode().lower()
+        if "account active               no" in output:
+            return {"key": "guest", "status": "healthy", "message": "Guest account is disabled"}
+        return {"key": "guest", "status": "unhealthy", "message": "Guest account is enabled"}
+    except Exception as e:
+        print("Guest account check failed:", e)
+        return {"key": "guest", "status": "unhealthy", "message": "Unable to determine guest account status"}
 
-def check_pending_updates():
+def check_bitlocker():
     try:
-        result = subprocess.check_output(
-            ['powershell', '-Command', '(New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher().Search("IsInstalled=0").Updates.Count'],
-            stderr=subprocess.DEVNULL,
-            creationflags=0x08000000
-        ).decode().strip()
-        return int(result) == 0
-    except:
-        return False
+        output = subprocess.check_output(
+            r'powershell -Command "Get-BitLockerVolume -MountPoint ''C:'' | ConvertTo-Json -Compress"',
+            shell=True
+        )
+        data = json.loads(output)
+        if isinstance(data, list):
+            data = data[0]
+        if data.get("VolumeStatus") == "FullyEncrypted":
+            return {"key": "bitlocker", "status": "healthy", "message": "BitLocker is enabled and drive is encrypted"}
+    except Exception as e:
+        print("BitLocker check failed:", e)
+    return {"key": "bitlocker", "status": "unhealthy", "message": "BitLocker is not enabled or drive is not encrypted"}
 
-def check_admin_accounts_with_no_password():
+def check_windows_update():
     try:
-        result = subprocess.check_output(
-            ['powershell', '-Command', 'Get-LocalUser | Where-Object { $_.Enabled -eq $true -and $_.PasswordRequired -eq $false -and $_.PrincipalSource -ne "Domain" } | Select -ExpandProperty Name'],
-            stderr=subprocess.DEVNULL,
-            creationflags=0x08000000
-        ).decode().splitlines()
-        return len([line for line in result if line.strip()]) == 0
-    except:
-        return False
+        w = wmi.WMI(namespace='root\\cimv2')
+        updates = sorted(
+            (u.InstalledOn for u in w.Win32_QuickFixEngineering() if u.InstalledOn),
+            reverse=True
+        )
+        if updates:
+            return {"key": "windows_update", "status": "healthy", "message": f"Latest update installed on {updates[0]}"}
+    except Exception as e:
+        print("Windows update check failed:", e)
+    return {
+        "key": "windows_update",
+        "status": "unhealthy",
+        "message": "Windows has not installed recent updates"
+    }
 
-def count_suspicious_autoruns():
-    suspicious = 0
+def check_rdp_encryption():
     try:
-        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\\Windows\\CurrentVersion\\Run") as key:
-            i = 0
-            while True:
-                try:
-                    _, value, _ = winreg.EnumValue(key, i)
-                    if any(s in value.lower() for s in ["temp", "appdata"]) or (value.lower().endswith(".exe") and not os.path.exists(value)):
-                        suspicious += 1
-                    i += 1
-                except OSError:
-                    break
-    except:
-        pass
-    return suspicious
+        key_path = r"SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp"
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path) as key:
+            value, _ = winreg.QueryValueEx(key, "UserAuthentication")
+            if value == 1:
+                return {"key": "rdp", "status": "healthy", "message": "RDP Network Level Authentication (NLA) is enabled"}
+    except Exception as e:
+        print("RDP encryption check failed:", e)
+    return {"key": "rdp", "status": "unhealthy", "message": "RDP does not enforce Network Level Authentication"}
 
-def run_all_checks():
-    results = {}
-
-    def run_and_store(key, func):
-        try:
-            results[key] = func()
-        except:
-            results[key] = False
-
-    threads = [
-        threading.Thread(target=run_and_store, args=("windows_defender", check_defender_status)),
-        threading.Thread(target=run_and_store, args=("firewall", check_firewall_status)),
-        threading.Thread(target=run_and_store, args=("guest_account", lambda: not check_guest_account_enabled())),
-        threading.Thread(target=run_and_store, args=("windows_update", check_pending_updates)),
-        threading.Thread(target=run_and_store, args=("admin_no_password", check_admin_accounts_with_no_password)),
-        threading.Thread(target=run_and_store, args=("suspicious_autoruns", count_suspicious_autoruns)),
+@router.get("/health-check")
+def health_check():
+    checks = [
+        check_defender(),
+        check_firewall(),
+        check_guest_account(),
+        check_bitlocker(),
+        check_windows_update(),
+        check_rdp_encryption(),
     ]
-
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join()
-
-    return results
-
+    return {"status": "ok", "checks": checks}

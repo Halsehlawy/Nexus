@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Layout from "../../components/Layout"
 import { ArrowLeft, RefreshCcw } from "lucide-react"
-import "../../styles/NetworkSecurity.css"
+import "../../styles/endpointSecurity.css"
 
 interface LogEntry {
   timestamp?: string
@@ -83,7 +83,7 @@ const LogAnalysis = () => {
   return (
     <Layout title="Log Analysis">
       <div className="back-button-container">
-        <button className="back-button" onClick={() => navigate("/network-security")}>
+        <button className="back-button" onClick={() => navigate("/endpoint-security")}>
           <ArrowLeft size={16} style={{ marginRight: "6px" }} />
           Go Back
         </button>

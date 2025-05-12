@@ -61,8 +61,9 @@ const NetworkScan = () => {
   return (
     <Layout title="Network Scan">
       <div className="back-button-container">
-        <button className="back-button" onClick={() => navigate("/network-security")}> 
-          <ArrowLeft size={16} style={{ marginRight: "6px" }} /> Go Back
+        <button className="back-button" onClick={() => navigate("/network-security")}>
+          <ArrowLeft size={16} style={{ marginRight: "6px" }} />
+          Go Back
         </button>
       </div>
 
@@ -81,7 +82,11 @@ const NetworkScan = () => {
         </div>
       </div>
 
-      {loading && <p className="loading-text">Running Nmap scan, please wait... <span className="spinner-inline"></span></p>}
+      {loading && (
+        <p className="loading-text">
+          Running Nmap scan, please wait... <span className="spinner-inline"></span>
+        </p>
+      )}
 
       {results && results.error && (
         <div className="result-box result-danger">
@@ -90,41 +95,43 @@ const NetworkScan = () => {
       )}
 
       {results && !results.error && (
-        <div className="scan-results">
-          {Object.entries(results).map(([host, data]: any) => (
-            <div key={host} className="result-card">
-              <div className="result-summary" onClick={() => toggleHostExpand(host)}>
-                <h4>{host} ({data.hostname || "Unknown"})</h4>
-                <p>Status: <strong>{data.state}</strong></p>
-              </div>
-
-              {expandedHost === host && (
-                <div className="result-details">
-                  {data.tcp && Object.keys(data.tcp).length > 0 && (
-                    <div>
-                      <p><strong>Open TCP Ports:</strong></p>
-                      <ul>
-                        {Object.entries(data.tcp).map(([port, info]: any) => (
-                          <li key={port}>{port}/tcp - {info.name} ({info.state})</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {data.os && data.os.length > 0 && (
-                    <div>
-                      <p><strong>OS Matches:</strong></p>
-                      <ul>
-                        {data.os.map((match: any, i: number) => (
-                          <li key={i}>{match.name} (Accuracy: {match.accuracy}%)</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+        <div className="table-scroll-container">
+          <div className="scan-results">
+            {Object.entries(results).map(([host, data]: any) => (
+              <div key={host} className="result-card">
+                <div className="result-summary" onClick={() => toggleHostExpand(host)}>
+                  <h4>{host} ({data.hostname || "Unknown"})</h4>
+                  <p>Status: <strong>{data.state}</strong></p>
                 </div>
-              )}
-            </div>
-          ))}
+
+                {expandedHost === host && (
+                  <div className="result-details">
+                    {data.tcp && Object.keys(data.tcp).length > 0 && (
+                      <div>
+                        <p><strong>Open TCP Ports:</strong></p>
+                        <ul>
+                          {Object.entries(data.tcp).map(([port, info]: any) => (
+                            <li key={port}>{port}/tcp - {info.name} ({info.state})</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {data.os && data.os.length > 0 && (
+                      <div>
+                        <p><strong>OS Matches:</strong></p>
+                        <ul>
+                          {data.os.map((match: any, i: number) => (
+                            <li key={i}>{match.name} (Accuracy: {match.accuracy}%)</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </Layout>

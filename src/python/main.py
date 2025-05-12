@@ -8,8 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from processMonitor import get_active_processes, kill_process
 from malwareScanner import upload_to_virustotal, fetch_vt_report
 from portScanner import get_open_ports, close_port_by_pid
-from startupManager import get_startup_programs, disable_startup_program
-from healthCheck import run_all_checks
+from healthCheck import router as health_router
 from firewallManager import (
     get_firewall_rules,
     create_firewall_rule,
@@ -21,7 +20,7 @@ from logAnalyzer import analyze_logs
 
 app = FastAPI()
 executor = ThreadPoolExecutor()
-
+app.include_router(health_router)
 # Allow React frontend to communicate
 app.add_middleware(
     CORSMiddleware,
@@ -30,10 +29,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-## health check
-@app.get("/health-checks")
-def get_health_status():
-    return run_all_checks()
+
 ## process monitor 
 @app.get("/processes")
 def list_processes():
@@ -90,21 +86,6 @@ def close_port(req: KillPortRequest):
         raise HTTPException(status_code=400, detail=result["message"])
     return result
 
-##startup manager
-class DisableStartupRequest(BaseModel):
-    name: str
-    location: str  # "CurrentUser" or "LocalMachine"
-
-@app.get("/startup-programs")
-def list_startup_programs():
-    return {"programs": get_startup_programs()}
-
-@app.post("/disable-startup-program")
-def disable_startup(req: DisableStartupRequest):
-    result = disable_startup_program(req.name, req.location)
-    if result["status"] == "error":
-        raise HTTPException(status_code=400, detail=result["message"])
-    return result
 
 ## firewall manager
 @app.get("/firewall-rules")

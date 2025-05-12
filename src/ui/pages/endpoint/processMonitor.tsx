@@ -107,97 +107,98 @@ const ProcessMonitor = () => {
   }
 
   return (
-      <Layout title="Active Processes">
-        <div className="back-button-container">
-          <button className="back-button" onClick={() => navigate("/endpoint-security")}>
-            <ArrowLeft size={18} style={{ marginRight: "8px" }} />
-            Go Back
-          </button>
-        </div>
-    
-        <div className="process-container-wide">
-          <div className="table-header">
-            <h2 className="process-title">Active Processes</h2>
-            <div className="search-bar">
-              <input
-                type="text"
-                placeholder="Search by name or user..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
-              <button
-                className="button"
-                onClick={handleKill}
-                style={{ marginLeft: "10px" }}
-                disabled={!selectedPid}
-              >
-                Kill Process
-              </button>
-            </div>
+    <Layout title="Active Processes">
+      <div className="back-button-container">
+        <button className="button" onClick={() => navigate("/endpoint-security")}>
+          <ArrowLeft size={18} style={{ marginRight: "8px" }} />
+          Go Back
+        </button>
+      </div>
+
+      <div className="container-box">
+        <div className="table-header">
+          <h2 className="section-title">Active Processes</h2>
+          <div className="row-group">
+            <input
+              type="text"
+              className="input"
+              placeholder="Search by name or user..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+            <button
+              className="button"
+              onClick={handleKill}
+              disabled={!selectedPid}
+            >
+              Kill Process
+            </button>
           </div>
-    
-          {loading ? (
-            <p className="loading-text">Loading processes...</p>
-          ) : (
-            <div className="table-wrapper">
-              <table className="process-table">
-                <thead>
-                  <tr>
-                    <th onClick={() => handleSort("pid")}>PID</th>
-                    <th onClick={() => handleSort("name")}>Name</th>
-                    <th onClick={() => handleSort("user")}>User</th>
-                    <th onClick={() => handleSort("cpu")}>CPU</th>
-                    <th onClick={() => handleSort("memory")}>RAM</th>
-                    <th onClick={() => handleSort("suspicious")}>Suspicious</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredProcesses.map(proc => (
-                    <tr
-                      key={proc.pid}
-                      onClick={() => setSelectedPid(proc.pid === selectedPid ? null : proc.pid)}
-                      className={proc.pid === selectedPid ? "selected-row" : ""}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <td>{proc.pid}</td>
-                      <td>{proc.name}</td>
-                      <td>{proc.user || "N/A"}</td>
-                      <td className={proc.cpu > 25 ? "highlight-red" : ""}>{proc.cpu}</td>
-                      <td className={proc.memory > 150 ? "highlight-red" : ""}>{proc.memory}</td>
-                      <td>
-                        {proc.suspicious && proc.suspicious_reasons.length > 0 ? (
-                          <div className="tooltip-container left">
-                            <span className="suspicious-flag">⚠ Suspicious</span>
-                            <div className="tooltip-content">
-                              <ul>
-                                {proc.suspicious_reasons.map((reason, index) => (
-                                  <li key={index}>{reason}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
-                        ) : (
-                          "–"
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                  {filteredProcesses.length === 0 && (
-                    <tr>
-                      <td colSpan={6} style={{ textAlign: "center", padding: "1rem" }}>
-                        No matching processes.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
-      </Layout>
-    )
-    
-  
+
+        {loading ? (
+          <div className="loading-spinner-container">
+            <div className="loading-spinner" />
+            Loading processes...
+          </div>
+        ) : (
+          <div className="table-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th onClick={() => handleSort("pid")}>PID</th>
+                  <th onClick={() => handleSort("name")}>Name</th>
+                  <th onClick={() => handleSort("user")}>User</th>
+                  <th onClick={() => handleSort("cpu")}>CPU</th>
+                  <th onClick={() => handleSort("memory")}>RAM</th>
+                  <th onClick={() => handleSort("suspicious")}>Suspicious</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredProcesses.map(proc => (
+                  <tr
+                    key={proc.pid}
+                    onClick={() => setSelectedPid(proc.pid === selectedPid ? null : proc.pid)}
+                    className={proc.pid === selectedPid ? "selected-row" : ""}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <td>{proc.pid}</td>
+                    <td>{proc.name}</td>
+                    <td>{proc.user || "N/A"}</td>
+                    <td className={proc.cpu > 25 ? "highlight-red" : ""}>{proc.cpu}</td>
+                    <td className={proc.memory > 150 ? "highlight-red" : ""}>{proc.memory}</td>
+                    <td>
+                      {proc.suspicious && proc.suspicious_reasons.length > 0 ? (
+                        <div className="tooltip-container left">
+                          <span className="suspicious-flag">⚠ Suspicious</span>
+                          <div className="tooltip-content">
+                            <ul>
+                              {proc.suspicious_reasons.map((reason, index) => (
+                                <li key={index}>{reason}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      ) : (
+                        "–"
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {filteredProcesses.length === 0 && (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: "center", padding: "1rem" }}>
+                      No matching processes.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </Layout>
+  )
 }
 
 export default ProcessMonitor

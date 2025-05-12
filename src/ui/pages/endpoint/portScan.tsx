@@ -71,24 +71,23 @@ const PortScan = () => {
       p.service.toLowerCase().includes(search.toLowerCase())
     )
     .sort((a, b) => {
-        const aVal = a[sortField]
-        const bVal = b[sortField]
-      
-        if (aVal == null || bVal == null) return 0
-      
-        if (typeof aVal === "string" && typeof bVal === "string") {
-          return sortOrder === "asc"
-            ? aVal.localeCompare(bVal)
-            : bVal.localeCompare(aVal)
-        }
-      
-        if (typeof aVal === "number" && typeof bVal === "number") {
-          return sortOrder === "asc" ? aVal - bVal : bVal - aVal
-        }
-      
-        return 0
-      })
-      
+      const aVal = a[sortField]
+      const bVal = b[sortField]
+
+      if (aVal == null || bVal == null) return 0
+
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        return sortOrder === "asc"
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal)
+      }
+
+      if (typeof aVal === "number" && typeof bVal === "number") {
+        return sortOrder === "asc" ? aVal - bVal : bVal - aVal
+      }
+
+      return 0
+    })
 
   useEffect(() => {
     fetchPorts()
@@ -97,58 +96,68 @@ const PortScan = () => {
   return (
     <Layout title="Port Scanner">
       <div className="back-button-container">
-        <button className="back-button" onClick={() => navigate("/endpoint-security")}>
+        <button className="button" onClick={() => navigate("/endpoint-security")}>
           <ArrowLeft size={16} style={{ marginRight: "6px" }} />
           Go Back
         </button>
       </div>
 
-      <div className="process-container-wide">
+      <div className="container-box">
         <div className="table-header">
-          <h2 className="process-title">Open Ports</h2>
-          <div className="search-bar">
+          <h2 className="section-title">Open Ports</h2>
+          <div className="row-group">
             <input
               type="text"
+              className="input"
               placeholder="Search process or service..."
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
-            <button className="button" onClick={handleClosePort} disabled={!selectedPid} style={{ marginLeft: "10px" }}>
+            <button
+              className="button"
+              onClick={handleClosePort}
+              disabled={!selectedPid}
+            >
               Close Port
             </button>
           </div>
         </div>
 
         {loading ? (
-          <p className="loading-text">Scanning ports...</p>
+          <div className="loading-spinner-container">
+            <div className="loading-spinner" />
+            Scanning ports...
+          </div>
         ) : (
-          <table className="process-table">
-            <thead>
-              <tr>
-                <th onClick={() => handleSort("port")}>Port</th>
-                <th onClick={() => handleSort("protocol")}>Protocol</th>
-                <th onClick={() => handleSort("service")}>Service</th>
-                <th onClick={() => handleSort("pid")}>PID</th>
-                <th onClick={() => handleSort("process_name")}>Process</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(entry => (
-                <tr
-                  key={`${entry.port}-${entry.pid}`}
-                  onClick={() => setSelectedPid(entry.pid === selectedPid ? null : entry.pid)}
-                  className={entry.pid === selectedPid ? "selected-row" : ""}
-                  style={{ cursor: "pointer" }}
-                >
-                  <td>{entry.port}</td>
-                  <td>{entry.protocol}</td>
-                  <td>{entry.service}</td>
-                  <td>{entry.pid}</td>
-                  <td>{entry.process_name}</td>
+          <div className="table-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th onClick={() => handleSort("port")}>Port</th>
+                  <th onClick={() => handleSort("protocol")}>Protocol</th>
+                  <th onClick={() => handleSort("service")}>Service</th>
+                  <th onClick={() => handleSort("pid")}>PID</th>
+                  <th onClick={() => handleSort("process_name")}>Process</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filtered.map(entry => (
+                  <tr
+                    key={`${entry.port}-${entry.pid}`}
+                    onClick={() => setSelectedPid(entry.pid === selectedPid ? null : entry.pid)}
+                    className={entry.pid === selectedPid ? "selected-row" : ""}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <td>{entry.port}</td>
+                    <td>{entry.protocol}</td>
+                    <td>{entry.service}</td>
+                    <td>{entry.pid}</td>
+                    <td>{entry.process_name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </Layout>
