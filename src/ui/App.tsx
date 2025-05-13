@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import Dashboard from "./pages/Dashboard"
 import Homepage from "./pages/homepage"
-import ServerManagement from "./pages/serverManagement"
-import AgentManagement from "./pages/agentManagement"
+import AgentManagement from "./pages/agent/agentManagement"
+import AddAgent from "./pages/agent/addAgent"
 import EndpointSecurity from "./pages/endpoint/endpointSecurity"
 import { HealthCheckProvider } from "./pages/endpoint/healthCheck"
 import ProcessMonitor from "./pages/endpoint/processMonitor"
@@ -27,7 +27,6 @@ function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/homepage" element={<Homepage />} />
-        <Route path="/server-management" element={<ServerManagement />} />
         <Route path="/endpoint-security" element={<EndpointSecurity />} />
         <Route path="/endpoint/processes" element={<ProcessMonitor />} />
         <Route path="/endpoint/malwareScan" element={<MalwareScan />} />
@@ -38,6 +37,7 @@ function App() {
         <Route path="/network/firewallRules" element={<FirewallRules />} />
         <Route path="/network/networkScan" element={<NetworkScan />} />
         <Route path="/agent-management" element={<AgentManagement />} />
+        <Route path="/add-agent" element={<AddAgent />} />
         <Route path="/threat-intelligence" element={<ThreatIntelligence />} />
 
       </Routes>

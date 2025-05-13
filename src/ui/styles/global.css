@@ -240,4 +240,10 @@
   .mt-lg {
     margin-top: var(--spacing-lg);
   }
-  
+
+  .page-content {
+  align-items: center;
+  padding: 24px;
+  padding-top: 120px;
+  padding-left: 40px;
+}

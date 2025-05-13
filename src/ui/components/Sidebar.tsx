@@ -2,7 +2,7 @@
 
 import { useNavigate, useLocation } from "react-router-dom"
 import "../styles/sidebar.css"
-import { BrainCircuit, Monitor, Network, ServerIcon, User } from "lucide-react"
+import { BrainCircuit, Monitor, Network, User } from "lucide-react"
 
 const Sidebar = () => {
   const navigate = useNavigate()
@@ -21,12 +21,6 @@ const Sidebar = () => {
 
       <nav className="sidebar-nav">
 
-        <button
-          className={`nav-item ${isActive("/server-management") ? "active" : ""}`}
-          onClick={() => navigate("/server-management")}
-        >
-        {<ServerIcon size={20} />} Server Management
-        </button>
 
         <button
           className={`nav-item ${isActive("/agent-management") ? "active" : ""}`}

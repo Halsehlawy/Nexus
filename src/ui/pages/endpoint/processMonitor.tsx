@@ -165,7 +165,7 @@ const ProcessMonitor = () => {
                     <td>{proc.pid}</td>
                     <td>{proc.name}</td>
                     <td>{proc.user || "N/A"}</td>
-                    <td className={proc.cpu > 25 ? "highlight-red" : ""}>{proc.cpu}</td>
+                    <td className={proc.cpu /16 > 25 ? "highlight-red" : ""}>{(proc.cpu/16)}</td>
                     <td className={proc.memory > 150 ? "highlight-red" : ""}>{proc.memory}</td>
                     <td>
                       {proc.suspicious && proc.suspicious_reasons.length > 0 ? (

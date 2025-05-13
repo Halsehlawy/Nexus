@@ -1,26 +1,41 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException,Body, Request, status
+from fastapi import FastAPI, UploadFile, File, HTTPException, Body, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 import shutil
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from processMonitor import get_active_processes, kill_process
-from malwareScanner import upload_to_virustotal, fetch_vt_report
-from portScanner import get_open_ports, close_port_by_pid
-from healthCheck import router as health_router
-from firewallManager import (
+
+# imports
+from functions.processMonitor import get_active_processes, kill_process
+from functions.malwareScanner import upload_to_virustotal, fetch_vt_report
+from functions.portScanner import get_open_ports, close_port_by_pid
+from functions.healthCheck import router as health_router
+from functions.firewallManager import (
     get_firewall_rules,
     create_firewall_rule,
     delete_firewall_rule,
     update_firewall_rule
 )
-from networkScanner import get_all_subnets, run_nmap_scan
-from logAnalyzer import analyze_logs
+from functions.networkScanner import get_all_subnets, run_nmap_scan
+from functions.logAnalyzer import analyze_logs
 
+from db.database import engine
+from db.models import Base
+from agent_routes import router as agent_router
+from functions.latestThreats import router as latest_threats_router
+
+
+
+#  App setup
 app = FastAPI()
 executor = ThreadPoolExecutor()
+
+# Create DB tables and include agent routes
+Base.metadata.create_all(bind=engine)
+app.include_router(agent_router)
 app.include_router(health_router)
+app.include_router(latest_threats_router)
 # Allow React frontend to communicate
 app.add_middleware(
     CORSMiddleware,
@@ -30,16 +45,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-## process monitor 
+# === Process Monitor ===
 @app.get("/processes")
 def list_processes():
     return get_active_processes()
 
-# Request body model for kill-process
 class KillRequest(BaseModel):
     pid: int
 
-# Kill process endpoint
 @app.post("/kill-process", status_code=status.HTTP_200_OK)
 def kill_process_api(request: KillRequest):
     print(f"[KILL] Attempting to terminate PID {request.pid}")
@@ -47,10 +60,9 @@ def kill_process_api(request: KillRequest):
 
     if result["status"] == "error":
         raise HTTPException(status_code=400, detail=result["message"])
-
     return result
 
-## malware scanner
+# === Malware Scanner ===
 @app.post("/scan-malware")
 async def scan_malware(file: UploadFile = File(...)):
     if not file:
@@ -71,7 +83,7 @@ async def scan_malware(file: UploadFile = File(...)):
     report = fetch_vt_report(upload_result["analysis_id"])
     return report
 
-## port scanner
+# === Port Scanner ===
 class KillPortRequest(BaseModel):
     pid: int
 
@@ -86,8 +98,7 @@ def close_port(req: KillPortRequest):
         raise HTTPException(status_code=400, detail=result["message"])
     return result
 
-
-## firewall manager
+# === Firewall Manager ===
 @app.get("/firewall-rules")
 def list_rules():
     return {"rules": get_firewall_rules()}
@@ -114,7 +125,7 @@ def update_rule(
 def delete_rule(name: str = Body(...)):
     return delete_firewall_rule(name)
 
-# === Network Scan Routes ===
+# === Network Scan ===
 @app.get("/network-scan/subnet")
 def get_subnets():
     return {"subnets": get_all_subnets()}
@@ -127,6 +138,7 @@ async def scan_network(request: Request):
     results = run_nmap_scan(scan_type, subnet)
     return results
 
+# === Log Analysis ===
 @app.get("/logs")
 def read_logs():
     logs = analyze_logs()
