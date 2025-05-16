@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom"
 import Layout from "../../components/Layout"
 import StatCard from "../../components/StatCard"
 import StatGrid from "../../components/StatGrid"
-import { BrickWallFire, Search, FileClock, Crosshair } from "lucide-react"
+import { BrickWallFire, Search, ArrowUpDown, Siren } from "lucide-react"
 import "../../styles/NetworkSecurity.css"
  
 
@@ -14,14 +14,8 @@ const NetworkSecurity = () => {
       <StatGrid>
         <StatCard icon={<BrickWallFire size={30} />} label="Firewall" onClick={() => navigate("/network/firewallRules")} />
         <StatCard icon={<Search size={30} />} label="Network Scan" onClick={() => navigate("/network/networkScan")}/>
-        <StatCard icon={<FileClock size={30} />} label="Logs" onClick={() => navigate("/network/logAnalysis")}/>
-        <StatCard
-          icon={<Crosshair size={30} />}
-          count={23}
-          label="Incidents"
-          onClick={() => navigate("/dashboard")}
-        />
-      </StatGrid>
+        <StatCard icon={<ArrowUpDown size={30} />} label="Traffic " onClick={() => navigate("/network/traffic")}/>
+        <StatCard icon={<Siren size={30} />} label="Rogue Devices" onClick={() => navigate("/network/rogueDevices")}/></StatGrid>
     </Layout>
   )
 }

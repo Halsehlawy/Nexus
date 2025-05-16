@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, Body, Request, status
+from fastapi import FastAPI, UploadFile, File, HTTPException, Body, Request, status, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
@@ -24,7 +24,8 @@ from db.database import engine
 from db.models import Base
 from agent_routes import router as agent_router
 from functions.latestThreats import router as latest_threats_router
-
+from functions.networkTraffic import get_network_traffic_snapshot
+from functions.rogueScanner import scan_rogue_devices, trust_device, untrust_device
 
 
 #  App setup
@@ -143,3 +144,23 @@ async def scan_network(request: Request):
 def read_logs():
     logs = analyze_logs()
     return { "logs": logs }
+
+@app.get("/network-traffic")
+def get_traffic():
+    return {"traffic": get_network_traffic_snapshot()}
+
+class DeviceTrustRequest(BaseModel):
+    mac: str
+    vendor: str
+
+@app.get("/rogue-devices")
+def get_rogue_devices(subnet: str = Query(..., description="Subnet to scan, e.g., 192.168.1.0/24")):
+    return scan_rogue_devices(subnet)
+
+@app.post("/trust-device")
+def api_trust_device(req: DeviceTrustRequest):
+    return trust_device(req.mac, req.vendor)
+
+@app.post("/untrust-device")
+def api_untrust_device(req: DeviceTrustRequest):
+    return untrust_device(req.mac, req.vendor)

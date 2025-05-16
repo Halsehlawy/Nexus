@@ -12,6 +12,8 @@ import MalwareScan from "./pages/endpoint/malwareScan"
 import NetworkSecurity from "./pages/network/networkSecurity"
 import FirewallRules from "./pages/network/FirewallRules"
 import NetworkScan from "./pages/network/networkScan"
+import RogueDevices from "./pages/network/rogueDevices"
+import NetworkTraffic from "./pages/network/networkTraffic"
 import LogAnalysis from "./pages/endpoint/logAnalysis"
 import ThreatIntelligence from "./pages/threatIntelligence"
 import "./styles/global.css"
@@ -36,6 +38,8 @@ function App() {
         <Route path="/network-security" element={<NetworkSecurity />} />
         <Route path="/network/firewallRules" element={<FirewallRules />} />
         <Route path="/network/networkScan" element={<NetworkScan />} />
+        <Route path="/network/rogueDevices" element={<RogueDevices />} />
+        <Route path="/network/traffic" element={<NetworkTraffic />} />
         <Route path="/agent-management" element={<AgentManagement />} />
         <Route path="/add-agent" element={<AddAgent />} />
         <Route path="/threat-intelligence" element={<ThreatIntelligence />} />

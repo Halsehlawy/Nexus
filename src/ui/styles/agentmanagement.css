@@ -138,3 +138,20 @@
   border-radius: 6px;
   color: #eee;
 }
+
+.am-status-circle {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.am-status-circle.online {
+  background-color: #32cd32; /* green */
+}
+
+.am-status-circle.offline {
+  background-color: #e74c3c; /* red */
+}

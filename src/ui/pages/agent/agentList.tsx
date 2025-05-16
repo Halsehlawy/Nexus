@@ -76,7 +76,15 @@ const AgentList = () => {
             style={{ cursor: "pointer" }}
           >
             <User className="am-agent-icon" />
-            <div className="am-agent-number">Agent {agent.id.toString().padStart(3, "0")}</div>
+            <div className="am-agent-number">
+            <span
+              className={`am-status-circle ${
+                agent.status.toLowerCase() === "online" ? "online" : "offline"
+              }`}
+            ></span>
+            Agent {agent.id.toString()}
+          </div>
+
           </div>
         ))}
       </div>
@@ -87,7 +95,7 @@ const AgentList = () => {
             <button className="am-close-btn" onClick={() => setSelectedAgent(null)}>
               <X size={18} />
             </button>
-            <h3>Agent {selectedAgent.id.toString().padStart(3, "0")} Details</h3>
+            <h3>Agent {selectedAgent.id.toString()} Details</h3>
             <div className="am-modal-content">
               <p><strong>IP Address:</strong> {selectedAgent.ip_address}</p>
               <p><strong>MAC:</strong> {selectedAgent.mac_address}</p>
